@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>noitemabuse</groupId>
+    <artifactId>NoItemAbuse</artifactId>
+    <version>1.0</version>
+    <name>NoItemAbuse</name>
+    <url>http://github.com/ruany/NoItemAbuse</url>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <build>
+        <finalName>NoItemAbuse</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <target>1.5</target>
+                    <source>1.5</source>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>target/classes/plugin.yml</file>
+                    <replacements>
+                        <replacement>
+                            <token>POMVersion</token>
+                            <value>${project.version}</value>
+                        </replacement>                         
+                    </replacements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <!-- <configuration>
+                    <minimizeJar>true</minimizeJar>
+                </configuration> -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/libs</url>
+        </repository>
+        <repository>
+            <id>bukkit</id>
+            <url>http://repo.bukkit.org/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>tagapi</id>
+            <url>http://repo.kitteh.org/content/repositories/public/</url>
+        </repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.2.5-R3.1</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.icecraft_mc</groupId>
+            <artifactId>frozenlib</artifactId>
+            <version>1.2.3</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>

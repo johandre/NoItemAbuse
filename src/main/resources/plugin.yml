@@ -1,0 +1,6 @@
+name: NoItemAbuse
+main: noitemabuse.NoItemAbuse
+version: POMVersion
+description: Prevents illegitimate items from being used
+author: Ruan
+website: https://github.com/ruany/NoItemAbuse
