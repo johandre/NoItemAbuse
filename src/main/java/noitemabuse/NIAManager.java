@@ -207,5 +207,6 @@ public class NIAManager extends Manager implements Listener {
                 armor[i] = null;
             }
         }
+        p.getInventory().setArmorContents(armor);
     }
 }
