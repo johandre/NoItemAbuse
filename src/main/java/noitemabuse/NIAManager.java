@@ -28,11 +28,6 @@ public class NIAManager extends Manager implements Listener {
         super(parent);
     }
 
-    @Override
-    public void deinit() {
-        log.close();
-    }
-
     public void check(HumanEntity p, ItemStack i, Event event, String info) {
         if (i == null || p.hasPermission("noitemabuse.allow")) return;
         final int durability = i.getDurability();
@@ -77,37 +72,9 @@ public class NIAManager extends Manager implements Listener {
         }
     }
 
-    public void remove(HumanEntity p, ItemStack i, int durability, Enchantment enchant, int level, Event event, String info) {
-        p.getInventory().remove(i);
-        if (event instanceof Cancellable) {
-            ((Cancellable) event).setCancelled(true);
-        }
-        //
-        final String name = p.getName();
-        final String item = i.getType().toString().toLowerCase().replaceAll("_", " ");
-        if (info == null) {
-            info = "from player " + name + "'s inventory";
-        }
-        String message = "Removed " + item + " " + info;
-        message += " [durability " + durability;
-        if (enchant != null) {
-            message += "; " + enchant.getName() + " enchantment level " + level + " > " + enchant.getMaxLevel();
-        }
-        message += "]";
-        log(p, message);
-        return;
-    }
-
-    private void log(HumanEntity p, String message) {
-        if (p.hasPermission("noitemabuse.log")) {
-            log.log(message);
-        }
-        message = RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + ChatColor.GOLD + message;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("noitemabuse.notify")) {
-                player.sendMessage(message);
-            }
-        }
+    @Override
+    public void deinit() {
+        log.close();
     }
 
     @Override
@@ -195,7 +162,50 @@ public class NIAManager extends Manager implements Listener {
         }
     }
 
+    public void remove(HumanEntity p, ItemStack item, int durability, Enchantment enchant, int level, Event event, String info) {
+        removeItem(p, item);
+        if (event instanceof Cancellable) {
+            ((Cancellable) event).setCancelled(true);
+        }
+        //
+        final String name = p.getName();
+        final String itemName = item.getType().toString().toLowerCase().replaceAll("_", " ");
+        if (info == null) {
+            info = "from player " + name + "'s inventory";
+        }
+        String message = "Removed " + itemName + " " + info;
+        message += " [durability " + durability;
+        if (enchant != null) {
+            message += "; " + enchant.getName() + " enchantment level " + level + " > " + enchant.getMaxLevel();
+        }
+        message += "]";
+        log(p, message);
+        return;
+    }
+
     private String getInfoFromLocation(Location loc) {
         return "[" + loc.getWorld().getName() + "] " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+    }
+
+    private void log(HumanEntity p, String message) {
+        if (p.hasPermission("noitemabuse.log")) {
+            log.log(message);
+        }
+        message = RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + ChatColor.GOLD + message;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission("noitemabuse.notify")) {
+                player.sendMessage(message);
+            }
+        }
+    }
+
+    private void removeItem(HumanEntity p, ItemStack item) {
+        p.getInventory().remove(item);
+        ItemStack[] armor = p.getInventory().getArmorContents();
+        for (int i = 0; i < armor.length; i++) {
+            if (armor[i] == item) {
+                armor[i] = null;
+            }
+        }
     }
 }
