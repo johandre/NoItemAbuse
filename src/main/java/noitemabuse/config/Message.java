@@ -1,3 +1,4 @@
+/* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.config;
 import static org.bukkit.ChatColor.*;
 import org.bukkit.entity.Player;
