@@ -1,6 +1,7 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse;
 
+import static noitemabuse.config.EventMessage.*;
 import static org.bukkit.ChatColor.*;
 
 import java.io.File;
@@ -18,18 +19,27 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
+import noitemabuse.config.*;
+
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 import eu.icecraft_mc.frozenlib_R1.manager.Manager;
 
 public class NIAManager extends Manager implements Listener {
     private FileLogger log;
+    private ConfigManager config;
 
     public NIAManager(Plugin parent) {
         super(parent);
     }
 
-    public void check(HumanEntity p, ItemStack i, Event event, String info) {
+    @Override
+    public boolean loadAfter(Manager manager) {
+        return manager instanceof ConfigManager;
+    }
+
+    public void check(Player p, ItemStack i, Event event, EventMessage message, String... args) {
         if (i == null || p.hasPermission("noitemabuse.allow")) return;
+        final String info = Message.format(p, message, args);
         final int durability = i.getDurability();
         final Map<Enchantment, Integer> enchantments = i.getEnchantments();
         if (i.getType() == Material.POTION) {
@@ -79,6 +89,7 @@ public class NIAManager extends Manager implements Listener {
 
     @Override
     public void init() {
+        config = plugin.getManager(ConfigManager.class);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         try {
             log = new FileLogger(new File(plugin.getDataFolder(), "NoItemAbuse.log"));
@@ -91,16 +102,15 @@ public class NIAManager extends Manager implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         Player p = e.getPlayer();
         ItemStack i = p.getItemInHand();
-        check(p, i, e, "from player " + p.getName() + " on block break");
+        check(p, i, e, BLOCK_BREAK);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
-            String info = "worn by player " + p.getName() + " on received attack";
             for (ItemStack i : p.getInventory().getArmorContents()) {
-                check(p, i, e, info);
+                check(p, i, e, RECEIVED_ATTACK);
             }
         }
     }
@@ -110,7 +120,7 @@ public class NIAManager extends Manager implements Listener {
         if (e.getDamager() instanceof Player) {
             Player p = (Player) e.getDamager();
             ItemStack i = p.getItemInHand();
-            check(p, i, e, "wielded by player " + p.getName() + " on attack");
+            check(p, i, e, ATTACK);
         }
     }
 
@@ -118,17 +128,18 @@ public class NIAManager extends Manager implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         // Do the same as onInventoryOpen, if the inventory type is PLAYER (because clients don't tell the server when they open their inventory)
         if (event.getInventory().getType() != InventoryType.PLAYER) return;
-        HumanEntity p = event.getWhoClicked();
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        Player p = (Player) event.getWhoClicked();
         ItemStack[] items = event.getInventory().getContents();
         for (ItemStack i : items) {
-            check(p, i, event, null);
+            check(p, i, event, INVENTORY_CLICK);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        HumanEntity p = event.getPlayer();
-        // if (((CraftInventory) event.getInventory()).getInventory().getContents() == null) return; // bukkit used to throw a NPE on inventory.getContents() if it was a beacon
+        if (!(event.getPlayer() instanceof Player)) return;
+        Player p = (Player) event.getPlayer();
         ItemStack[] items = event.getInventory().getContents();
         Location loc = p.getLocation();
         for (ItemStack i : items) {
@@ -139,10 +150,8 @@ public class NIAManager extends Manager implements Listener {
                     loc = ((DoubleChest) event.getInventory().getHolder()).getLocation();
                 }
             } catch (Exception e) {}
-            String info = getInfoFromLocation(loc);
             String type = event.getInventory().getType().name().toLowerCase().replace("_", " ");
-            info = "from inventory type (" + type + ") at {" + info + "} triggered by " + p.getName();
-            check(p, i, event, info);
+            check(p, i, event, CONTAINER_OPEN, "$container:" + type, "$location:" + locationToString(loc));
         }
     }
 
@@ -150,7 +159,7 @@ public class NIAManager extends Manager implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         ItemStack i = event.getItemDrop().getItemStack();
         Player p = event.getPlayer();
-        check(p, i, event, "dropped by " + p.getName());
+        check(p, i, event, ITEM_DROP, "$location:" + locationToString(p.getLocation()));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -158,32 +167,29 @@ public class NIAManager extends Manager implements Listener {
         Player p = e.getPlayer();
         ItemStack i = p.getItemInHand();
         if (i.getType() == Material.POTION) {
-            check(p, i, e, "from player " + p.getName() + " on potion throw");
+            check(p, i, e, POTION_THROW);
         }
     }
 
-    public void remove(HumanEntity p, ItemStack item, int durability, Enchantment enchant, int level, Event event, String info) {
+    public void remove(Player p, ItemStack item, int durability, Enchantment enchant, int level, Event event, String info) {
         removeItem(p, item);
         if (event instanceof Cancellable) {
             ((Cancellable) event).setCancelled(true);
         }
         //
-        final String name = p.getName();
-        final String itemName = item.getType().toString().toLowerCase().replaceAll("_", " ");
-        if (info == null) {
-            info = "from player " + name + "'s inventory";
-        }
-        String message = "Removed " + itemName + " " + info;
-        message += " [durability " + durability;
-        if (enchant != null) {
-            message += "; " + enchant.getName() + " enchantment level " + level + " > " + enchant.getMaxLevel();
-        }
-        message += "]";
+        final String itemName = item.getType().toString().toLowerCase().replace("_", " ");
+        final String enchantName = enchant.getName();
+        final int max = enchant.getMaxLevel();
+        List<String> reasons = new ArrayList<String>(3);
+        if(durability != 0) reasons.add(Message.format(p, Message.REASON_OVERDURABLE, "$durability:" + durability));
+        if(level > max) reasons.add(Message.format(p, Message.REASON_OVERENCHANT, "$enchant:" + enchantName, "$level:" + level, "$max:" + max));
+        String reason = "undefined"; // TODO reason enum
+        String message = config.getActionMessage(p, "$item:" + itemName, "$reason:" + reason);
         log(p, message);
         return;
     }
 
-    private String getInfoFromLocation(Location loc) {
+    private String locationToString(Location loc) {
         return "[" + loc.getWorld().getName() + "] " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
     }
 
@@ -193,10 +199,14 @@ public class NIAManager extends Manager implements Listener {
         }
         message = RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + ChatColor.GOLD + message;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("noitemabuse.notify")) {
+            if (player.hasPermission("noitemabuse.notify") && shouldNotify(player)) {
                 player.sendMessage(message);
             }
         }
+    }
+
+    private boolean shouldNotify(Player player) {
+        return config.toggled.contains(player.getName().toLowerCase()) != config.defaultNotify;
     }
 
     private void removeItem(HumanEntity p, ItemStack item) {
