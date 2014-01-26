@@ -18,7 +18,7 @@ public class ConfigManager extends Manager {
     public boolean multiAlert = false;
     public boolean removeInvalidPotions = true;
     public String actionString = "cancel,remove,notify,log";
-    public Action[] actions = parseActions(actionString.split(","));
+    public Action[] actions;
     private Action[] allActions;
 
     public ConfigManager(Plugin parent) {
@@ -63,8 +63,9 @@ public class ConfigManager extends Manager {
     }
 
     private Action[] parseActions(String[] actions) {
-
-        if(allActions == null) allActions = getAllActions();
+        if (allActions == null) {
+            allActions = getAllActions();
+        }
         List<Action> list = new ArrayList<Action>();
         for (String str : actions) {
             str = str.trim();
