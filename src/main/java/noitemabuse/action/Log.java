@@ -46,7 +46,7 @@ public class Log extends Action {
         final String enchantName = enchant.getName();
         int durability = item.getDurability();
         List<String> reasons = new ArrayList<String>(5);
-        if (durability != 0) {
+        if (durability < 0) {
             reasons.add(Message.format(player, Message.REASON_OVERDURABLE, "$durability:" + durability));
         }
         if (enchant != null) {
