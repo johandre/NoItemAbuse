@@ -4,3 +4,7 @@ version: POMVersion
 description: Prevents illegitimate items from being used
 author: Ruan
 website: https://github.com/ruany/NoItemAbuse
+commands:
+  noitemabuse:
+    aliases: [nia, ni, n]
+    usage: /<command> toggle
