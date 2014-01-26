@@ -4,7 +4,7 @@ package noitemabuse.config;
 public enum EventMessage implements MessageEnum {
     BLOCK_BREAK("held by $player on block break"),
     RECEIVED_ATTACK("worn by $player on received attack"),
-    ATTACK("wielded by $player when attacking $player2"),
+    ATTACK("wielded by $player on attack"),
     INVENTORY_CLICK("in inventory of $player"),
     CONTAINER_OPEN("in $container at $location opened by $player"),
     ITEM_DROP("dropped by $player at $location"),
