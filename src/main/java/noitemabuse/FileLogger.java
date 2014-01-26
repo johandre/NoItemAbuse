@@ -10,7 +10,7 @@ import java.util.Date;
  * @author ruan
  */
 public class FileLogger {
-    private SimpleDateFormat format = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss]");
+    private SimpleDateFormat format = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
     private Date date = new Date();
     private final PrintWriter writer;
 
