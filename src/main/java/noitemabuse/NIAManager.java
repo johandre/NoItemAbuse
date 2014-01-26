@@ -88,6 +88,10 @@ public class NIAManager extends Manager implements Listener {
         log.close();
     }
 
+    public int getPotionLevel(ItemStack i) {
+        return (i.getDurability() & 0x20) >> 5; // damage & TIER_BIT >> TIER_SHIFT;
+    }
+
     @Override
     public void init() {
         config = plugin.getManager(ConfigManager.class);
@@ -181,10 +185,6 @@ public class NIAManager extends Manager implements Listener {
         for (Action action : config.actions) {
             action.perform(player, item, event, message);
         }
-    }
-
-    public int getPotionLevel(ItemStack i) {
-        return (i.getDurability() & 0x20) >> 5; // damage & TIER_BIT >> TIER_SHIFT;
     }
 
     private String locationToString(Location loc) {

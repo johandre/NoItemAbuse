@@ -50,15 +50,15 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
         config.toggled.remove(name);
     }
 
-    void remove(Player player, String name) {
-        config.toggled.remove(name);
-    }
-
     void add(Player player, String name) {
         config.toggled.add(name);
     }
-    
+
     Message getToggleMessage(String name) {
         return config.toggled.contains(name) != config.defaultNotify ? Message.COMMAND_TOGGLE_ON : Message.COMMAND_TOGGLE_OFF;
+    }
+
+    void remove(Player player, String name) {
+        config.toggled.remove(name);
     }
 }

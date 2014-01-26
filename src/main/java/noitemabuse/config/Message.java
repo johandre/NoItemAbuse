@@ -1,5 +1,6 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.config;
+
 import static org.bukkit.ChatColor.*;
 
 import org.bukkit.entity.Player;
@@ -52,6 +53,10 @@ public enum Message implements MessageEnum {
         return all;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     public String getNode() {
         return "messages." + name().toLowerCase();
     }
@@ -60,9 +65,6 @@ public enum Message implements MessageEnum {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
     @Override
     public String toString() {
         return getMessage();
