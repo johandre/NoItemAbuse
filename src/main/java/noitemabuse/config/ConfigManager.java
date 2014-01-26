@@ -49,7 +49,6 @@ public class ConfigManager extends Manager {
         multiAlert = cfg.getBoolean("multi_alert", multiAlert);
         removeInvalidPotions = cfg.getBoolean("remove_invalid_potions", removeInvalidPotions);
         String as = cfg.getString("actions", actionString).toLowerCase();
-        allActions = getAllActions();
         actions = parseActions(as.split(","));
         for (MessageEnum message : Message.getMessages()) {
             message.setMessage(cfg.getString(message.getNode(), message.getMessage()));
@@ -64,6 +63,8 @@ public class ConfigManager extends Manager {
     }
 
     private Action[] parseActions(String[] actions) {
+
+        if(allActions == null) allActions = getAllActions();
         List<Action> list = new ArrayList<Action>();
         for (String str : actions) {
             str = str.trim();
