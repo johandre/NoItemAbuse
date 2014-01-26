@@ -18,7 +18,7 @@ public class ConfigManager extends Manager {
     public boolean multiAlert = false;
     public boolean removeInvalidPotions = true;
     public boolean logAllPlayers = true;
-    public String actionString = "cancel,remove,notify,log";
+    public String actionString = "remove,cancel,notify,log";
     public Action[] actions;
     private Action[] allActions;
 
@@ -31,6 +31,10 @@ public class ConfigManager extends Manager {
             StringBuilder alert = new StringBuilder();
             for (Action action : actions) {
                 Message msg = action.getMessage();
+                // prevent multi-alert from being *too* spammy
+                if (actions.length > 1 && (msg == Message.LOG || msg == Message.CANCEL)) {
+                    continue;
+                }
                 alert.append(Message.format(p, msg, args)).append("\n");
             }
             String str = alert.toString();
