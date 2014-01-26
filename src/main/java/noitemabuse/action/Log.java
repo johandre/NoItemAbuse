@@ -26,8 +26,8 @@ public class Log extends Action {
     }
 
     @Override
-    public void perform(Player player, ItemStack item, Event event, String message) {
-        log(player, getMessage(player, item, event, message));
+    public Message getMessage() {
+        return Message.LOG;
     }
 
     public String getMessage(Player player, ItemStack item, Event event, String eventMessage) {
@@ -55,7 +55,8 @@ public class Log extends Action {
         if (config.removeInvalidPotions) {
             Message reason = manager.checkPotion(player, item);
             if (reason != null) {
-                reasons.add(Message.format(player, reason, "$type:" + getInvalidType(item), "$level:" + manager.getPotionLevel(item)));
+                reasons.add(Message.format(player, reason, "$type:" + getInvalidType(item), "$level:" + manager.getPotionLevel(item), "$effectlevel:" + getInvalidEffectLevel(item), "$duration:"
+                        + getInvalidDuration(item)));
             }
         }
         StringBuilder reasonbuilder = new StringBuilder();
@@ -74,17 +75,17 @@ public class Log extends Action {
     }
 
     @Override
-    public Message getMessage() {
-        return Message.LOG;
+    public void perform(Player player, ItemStack item, Event event, String message) {
+        log(player, getMessage(player, item, event, message));
     }
 
-    private void log(Player p, String message) {
-        if (config.logAllPlayers || p.hasPermission("noitemabuse.log")) {
-            manager.log.log(message);
-        }
+    private int getInvalidDuration(ItemStack potion) {
+        PotionEffect effect = getInvalidEffect(potion);
+        if (effect != null) return effect.getDuration();
+        return -1;
     }
 
-    private String getInvalidType(ItemStack potion) {
+    private PotionEffect getInvalidEffect(ItemStack potion) {
         try {
             Potion pot = Potion.fromItemStack(potion);
             final Iterator<PotionEffect> effects = pot.getEffects().iterator();
@@ -92,9 +93,27 @@ public class Log extends Action {
                 final PotionEffect effect = effects.next();
                 final int level = effect.getAmplifier();
                 final int duration = effect.getDuration();
-                if (level > 2 || duration > 9600) return effect.getType().toString();
+                if (level > 2 || duration > 9600) return effect;
             }
         } catch (Throwable ex) {}
-        return "";
+        return null;
+    }
+
+    private int getInvalidEffectLevel(ItemStack potion) {
+        PotionEffect effect = getInvalidEffect(potion);
+        if (effect != null) return effect.getAmplifier();
+        return -1;
+    }
+
+    private String getInvalidType(ItemStack potion) {
+        PotionEffect effect = getInvalidEffect(potion);
+        if (effect != null) return effect.getType().toString();
+        return "undefined";
+    }
+
+    private void log(Player p, String message) {
+        if (config.logAllPlayers || p.hasPermission("noitemabuse.log")) {
+            manager.log.log(message);
+        }
     }
 }
