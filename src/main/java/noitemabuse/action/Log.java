@@ -28,10 +28,10 @@ public class Log extends Action {
     }
 
     public void perform(Player player, ItemStack item, Event event, String message) {
-        log(player, getMessage(player, item, event));
+        log(player, getMessage(player, item, event, message));
     }
     
-    public String getMessage(Player player, ItemStack item, Event event) {
+    public String getMessage(Player player, ItemStack item, Event event, String eventMessage) {
         final String itemName = item.getType().toString().toLowerCase().replace("_", " ");
         Enchantment enchant = null;
         int level = 0, max = 0;
@@ -61,7 +61,7 @@ public class Log extends Action {
         }
         String reason = reasonbuilder.toString();
         reason = reason.substring(0, reason.length() - 2);
-        String message = config.getActionMessage(player, "$item:" + itemName, "$reason:" + reason);
+        String message = config.getActionMessage(player, "$item:" + itemName, "$reason:" + reason, "$event:" + eventMessage);
         return message;
     }
 

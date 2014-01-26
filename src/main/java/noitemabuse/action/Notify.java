@@ -17,7 +17,7 @@ public class Notify extends Log {
 
     @Override
     public void perform(Player player, ItemStack item, Event event, String eventMessage) {
-        String message = getMessage(player, item, event);
+        String message = getMessage(player, item, event, eventMessage);
         message = Message.ALERT_PREFIX + message;
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.hasPermission("noitemabuse.notify") && shouldNotify(p)) {
