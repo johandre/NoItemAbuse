@@ -34,6 +34,7 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
         Player player = (Player) sender;
         String name = sender.getName().toLowerCase();
         if (args[0].equals("toggle")) {
+            player.sendMessage(getToggleMessage(name).getMessage());
             if (!config.toggled.contains(name)) {
                 add(player, name);
             } else {
@@ -51,11 +52,13 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
 
     void remove(Player player, String name) {
         config.toggled.remove(name);
-        player.sendMessage(Message.COMMAND_TOGGLE_OFF.getMessage());
     }
 
     void add(Player player, String name) {
         config.toggled.add(name);
-        player.sendMessage(Message.COMMAND_TOGGLE_ON.getMessage());
+    }
+    
+    Message getToggleMessage(String name) {
+        return config.toggled.contains(name) != config.defaultNotify ? Message.COMMAND_TOGGLE_ON : Message.COMMAND_TOGGLE_OFF;
     }
 }

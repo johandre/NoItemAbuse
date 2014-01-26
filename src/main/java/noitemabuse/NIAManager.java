@@ -2,7 +2,6 @@
 package noitemabuse;
 
 import static noitemabuse.config.EventMessage.*;
-import static org.bukkit.ChatColor.*;
 
 import java.io.File;
 import java.util.*;
@@ -10,7 +9,7 @@ import java.util.*;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
@@ -19,67 +18,69 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
+import noitemabuse.action.Action;
 import noitemabuse.config.*;
 
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 import eu.icecraft_mc.frozenlib_R1.manager.Manager;
 
 public class NIAManager extends Manager implements Listener {
-    private FileLogger log;
+    public FileLogger log;
     private ConfigManager config;
 
     public NIAManager(Plugin parent) {
         super(parent);
     }
 
-    @Override
-    public boolean loadAfter(Manager manager) {
-        return manager instanceof ConfigManager;
-    }
-
-    public void check(Player p, ItemStack i, Event event, EventMessage message, String... args) {
+    public void check(Player p, ItemStack i, Event e, EventMessage eventMessage, String... args) {
         if (i == null || p.hasPermission("noitemabuse.allow")) return;
-        final String info = Message.format(p, message, args);
+        String message = Message.format(p, eventMessage, args);
         final int durability = i.getDurability();
         final Map<Enchantment, Integer> enchantments = i.getEnchantments();
-        if (i.getType() == Material.POTION) {
-            Potion pot;
-            try {
-                pot = Potion.fromItemStack(i);
-            } catch (Throwable ex) {
-                int level = (i.getDurability() & 0x20) >> 5;
-                if (level < 0 || level > 2) {
-                    remove(p, i, durability, null, -1, event, info + " (invalid potion level " + level + ")");
-                }
-                return;
-            }
-            final Iterator<PotionEffect> effects = pot.getEffects().iterator();
-            while (effects.hasNext()) {
-                final PotionEffect effect = effects.next();
-                final int level = effect.getAmplifier();
-                final int duration = effect.getDuration();
-                if (level > 2) {
-                    remove(p, i, durability, null, -1, event, info + " (potion effect " + effect.getType().getName() + " duration " + duration + ", level " + level + " > 2)");
-                    return;
-                }
-                if (duration > 9600) {
-                    remove(p, i, durability, null, -1, event, info + " (potion effect " + effect.getType().getName() + " duration " + duration + " > 9600, level " + level + ")");
-                    return;
-                }
+        if (config.removeInvalidPotions) {
+            Message reason = checkPotion(p, i);
+            if (reason != null) {
+                remove(p, i, e, message);
             }
         }
         if (durability < -1) {
-            remove(p, i, durability, null, -1, event, info);
+            remove(p, i, e, message);
         } else {
             for (Enchantment enchant : enchantments.keySet()) {
                 final int level = enchantments.get(enchant);
                 final int max = enchant.getMaxLevel();
                 if (level > max) {
-                    remove(p, i, durability, enchant, level, event, info);
+                    remove(p, i, e, message);
                     return;
                 }
             }
         }
+    }
+
+    public Message checkPotion(Player p, ItemStack i) {
+        if (i.getType() != Material.POTION) return null;
+        Potion pot;
+        try {
+            pot = Potion.fromItemStack(i);
+        } catch (Throwable ex) {
+            // Potion constants are private, and Potion has no true error handling.
+            // Only String constants are available to depend on.
+            // They aren't really part of the API, i.e: changing them would not
+            // be considered "[BREAKING]". They are rather volatile in this regard.
+            // See Bukkit commit ccc56c8 for an example of string volatility.
+            int level = getPotionLevel(i);
+            if (level < 0 || level > 1) return Message.REASON_POTION_INVALID_LEVEL;
+            return null;
+        }
+        final Iterator<PotionEffect> effects = pot.getEffects().iterator();
+        while (effects.hasNext()) {
+            final PotionEffect effect = effects.next();
+            final int level = effect.getAmplifier();
+            final int duration = effect.getDuration();
+            if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
+            if (duration > 9600) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        }
+        return null;
     }
 
     @Override
@@ -96,6 +97,11 @@ public class NIAManager extends Manager implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean loadAfter(Manager manager) {
+        return manager instanceof ConfigManager;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -171,52 +177,17 @@ public class NIAManager extends Manager implements Listener {
         }
     }
 
-    public void remove(Player p, ItemStack item, int durability, Enchantment enchant, int level, Event event, String info) {
-        removeItem(p, item);
-        if (event instanceof Cancellable) {
-            ((Cancellable) event).setCancelled(true);
+    public void remove(Player player, ItemStack item, Event event, String message) {
+        for (Action action : config.actions) {
+            action.perform(player, item, event, message);
         }
-        //
-        final String itemName = item.getType().toString().toLowerCase().replace("_", " ");
-        final String enchantName = enchant.getName();
-        final int max = enchant.getMaxLevel();
-        List<String> reasons = new ArrayList<String>(3);
-        if(durability != 0) reasons.add(Message.format(p, Message.REASON_OVERDURABLE, "$durability:" + durability));
-        if(level > max) reasons.add(Message.format(p, Message.REASON_OVERENCHANT, "$enchant:" + enchantName, "$level:" + level, "$max:" + max));
-        String reason = "undefined"; // TODO reason enum
-        String message = config.getActionMessage(p, "$item:" + itemName, "$reason:" + reason);
-        log(p, message);
-        return;
+    }
+
+    public int getPotionLevel(ItemStack i) {
+        return (i.getDurability() & 0x20) >> 5; // damage & TIER_BIT >> TIER_SHIFT;
     }
 
     private String locationToString(Location loc) {
         return "[" + loc.getWorld().getName() + "] " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-    }
-
-    private void log(HumanEntity p, String message) {
-        if (p.hasPermission("noitemabuse.log")) {
-            log.log(message);
-        }
-        message = RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + ChatColor.GOLD + message;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("noitemabuse.notify") && shouldNotify(player)) {
-                player.sendMessage(message);
-            }
-        }
-    }
-
-    private boolean shouldNotify(Player player) {
-        return config.toggled.contains(player.getName().toLowerCase()) != config.defaultNotify;
-    }
-
-    private void removeItem(HumanEntity p, ItemStack item) {
-        p.getInventory().remove(item);
-        ItemStack[] armor = p.getInventory().getArmorContents();
-        for (int i = 0; i < armor.length; i++) {
-            if (armor[i] == item) {
-                armor[i] = null;
-            }
-        }
-        p.getInventory().setArmorContents(armor);
     }
 }

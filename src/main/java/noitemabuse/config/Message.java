@@ -1,6 +1,7 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.config;
 import static org.bukkit.ChatColor.*;
+
 import org.bukkit.entity.Player;
 
 public enum Message implements MessageEnum {
@@ -9,9 +10,15 @@ public enum Message implements MessageEnum {
     CONFISCATE("Confiscated $item $event ($reason)"),
     PURIFY("Purified $item $event ($reason)"),
     REMOVE("Removed $item $event ($reason)"),
+    CANCEL("Prevented use of $item $event ($reason)"),
+    LOG("Item used: $item $event ($reason)"),
+    ALERT_PREFIX(RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + GOLD),
     REASON_BANNED_ITEM("banned item"),
     REASON_OVERDURABLE("durability $durability < 0"),
     REASON_OVERENCHANT("$enchant enchantment level $level > $max"),
+    REASON_POTION_INVALID_LEVEL("invalid potion level $level"),
+    REASON_POTION_INVALID_EFFECT_LEVEL("invalid potion effect $type: $effectlevel > 2"),
+    REASON_POTION_INVALID_EFFECT_DURATION("invalid potion effect $type: $duration > 9600"),
     COMMAND_TOGGLE_ON(GREEN + "Alerts have been toggled on."),
     COMMAND_TOGGLE_OFF(GREEN + "Alerts have been toggled off.");
     private String message;
@@ -55,5 +62,9 @@ public enum Message implements MessageEnum {
 
     public String getMessage() {
         return message;
+    }
+    @Override
+    public String toString() {
+        return getMessage();
     }
 }

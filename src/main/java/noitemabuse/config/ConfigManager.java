@@ -5,18 +5,39 @@ import java.util.*;
 
 import org.bukkit.entity.Player;
 
+import noitemabuse.action.Action;
+
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 import eu.icecraft_mc.frozenlib_R1.manager.Manager;
+import eu.icecraft_mc.frozenlib_R1.util.ClassFinder;
 import eu.icecraft_mc.frozenlib_R1.util.config.SimpleConfiguration;
 
 public class ConfigManager extends Manager {
     public List<String> toggled = new ArrayList<String>();
     public boolean defaultNotify = true;
+    public boolean multiAlert = false;
+    public boolean removeInvalidPotions = true;
     public String actionString = "cancel,remove,notify,log";
-    public String[] actions = actionString.split(",");
+    public Action[] actions = parseActions(actionString.split(","));
+    private Action[] allActions;
 
     public ConfigManager(Plugin parent) {
         super(parent);
+    }
+
+    public String getActionMessage(Player p, String... args) {
+        if (multiAlert) {
+            StringBuilder alert = new StringBuilder();
+            for (Action action : actions) {
+                Message msg = action.getMessage();
+                alert.append(Message.format(p, msg, args)).append("\n");
+            }
+            String str = alert.toString();
+            return str.substring(0, str.length() - 1);
+        } else {
+            Message msg = actions[0].getMessage();
+            return Message.format(p, msg, args);
+        }
     }
 
     @Override
@@ -25,27 +46,33 @@ public class ConfigManager extends Manager {
         String folder = plugin.getDataFolder().getAbsolutePath();
         cfg.init(folder);
         defaultNotify = cfg.getBoolean("default_notify", defaultNotify);
+        multiAlert = cfg.getBoolean("multi_alert", multiAlert);
+        removeInvalidPotions = cfg.getBoolean("remove_invalid_potions", removeInvalidPotions);
         String as = cfg.getString("actions", actionString).toLowerCase();
-        actions = as.split(",");
+        allActions = getAllActions();
+        actions = parseActions(as.split(","));
         for (MessageEnum message : Message.getMessages()) {
             message.setMessage(cfg.getString(message.getNode(), message.getMessage()));
         }
         cfg.save(folder);
     }
 
-    public String getActionMessage(Player p, String... args) {
-        Message msg = null;
+    private Action[] getAllActions() {
+        ClassFinder finder = plugin.getClassFinder();
+        List<Action> actions = finder.getInstancesOfType(finder.getJarPath(getClass()), "", Action.class, new Class[] { Plugin.class }, plugin);
+        return actions.toArray(new Action[actions.size()]);
+    }
+
+    private Action[] parseActions(String[] actions) {
+        List<Action> list = new ArrayList<Action>();
         for (String str : actions) {
-            if (str.equals("ban")) {
-                msg = Message.BAN;
-            } else if (str.equals("kick")) {
-                msg = Message.KICK;
-            } else if (str.equals("remove")) {
-                msg = Message.REMOVE;
-            } else if (str.equals("confiscate")) {
-                msg = Message.CONFISCATE;
+            str = str.trim();
+            for (Action action : allActions) {
+                if (action.getName().equals(str)) {
+                    list.add(action);
+                }
             }
         }
-        return Message.format(p, msg, args);
+        return list.toArray(new Action[list.size()]);
     }
 }
