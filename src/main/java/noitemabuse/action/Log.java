@@ -79,7 +79,7 @@ public class Log extends Action {
     }
 
     private void log(Player p, String message) {
-        if (p.hasPermission("noitemabuse.log")) {
+        if (config.logAllPlayers || p.hasPermission("noitemabuse.log")) {
             manager.log.log(message);
         }
     }
