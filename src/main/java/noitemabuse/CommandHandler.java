@@ -29,7 +29,7 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0) return false;
+        if (args.length == 0 || !sender.hasPermission("noitemabuse.notify")) return false;
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
         String name = sender.getName().toLowerCase();
