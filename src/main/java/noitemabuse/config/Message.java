@@ -6,14 +6,15 @@ import static org.bukkit.ChatColor.*;
 import org.bukkit.entity.Player;
 
 public enum Message implements MessageEnum {
-    BAN("Banned $player for having invalid item: $item ($reason)"),
-    KICK("Kicked $player for having invalid item: $item ($reason)"),
+    BAN("Banned $player for having invalid $item ($reason)"),
+    KICK("Kicked $player for having invalid $item ($reason)"),
     CONFISCATE("Confiscated $item $event ($reason)"),
     PURIFY("Purified $item $event ($reason)"),
     REMOVE("Removed $item $event ($reason)"),
     CANCEL("Prevented use of $item $event ($reason)"),
     LOG("Item used: $item $event ($reason)"),
     ALERT_PREFIX(RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + GOLD),
+    ITEM_POTION_EFFECT("potion effect"),
     REASON_BANNED_ITEM("banned item"),
     REASON_OVERDURABLE("durability $durability < 0"),
     REASON_OVERENCHANT("$enchant enchantment level $level > $max"),

@@ -31,7 +31,12 @@ public class Log extends Action {
     }
 
     public String getMessage(Player player, ItemStack item, Event event, String eventMessage) {
-        final String itemName = item.getType().toString().toLowerCase().replace("_", " ");
+        final String itemName;
+        if (item == null) {
+            itemName = Message.ITEM_POTION_EFFECT.getMessage();
+        } else {
+            itemName = item.getType().toString().toLowerCase().replace("_", " ");
+        }
         Enchantment enchant = null;
         int level = 0, max = 0;
         for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
@@ -53,7 +58,7 @@ public class Log extends Action {
             reasons.add(Message.format(player, Message.REASON_OVERENCHANT, "$enchant:" + enchantName, "$level:" + level, "$max:" + max));
         }
         if (config.removeInvalidPotions) {
-            Message reason = manager.checkPotion(player, item);
+            Message reason = manager.checkPotionAndEffects(player, item);
             if (reason != null) {
                 reasons.add(Message.format(player, reason, "$type:" + getInvalidType(item), "$level:" + manager.getPotionLevel(item), "$effectlevel:" + getInvalidEffectLevel(item), "$duration:"
                         + getInvalidDuration(item)));

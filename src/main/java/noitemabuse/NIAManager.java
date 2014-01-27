@@ -38,7 +38,7 @@ public class NIAManager extends Manager implements Listener {
         final int durability = i.getDurability();
         final Map<Enchantment, Integer> enchantments = i.getEnchantments();
         if (config.removeInvalidPotions) {
-            Message reason = checkPotion(p, i);
+            Message reason = checkPotionAndEffects(p, i);
             if (reason != null) {
                 remove(p, i, e, message);
             }
@@ -57,7 +57,16 @@ public class NIAManager extends Manager implements Listener {
         }
     }
 
-    public Message checkPotion(Player p, ItemStack i) {
+    public Message checkPotionAndEffects(Player p, ItemStack i) {
+        Message invalidActiveEffect = null;
+        for (PotionEffect effect : p.getActivePotionEffects()) {
+            Message reason = checkEffect(effect);
+            if (reason != null) {
+                invalidActiveEffect = reason;
+                p.removePotionEffect(effect.getType());
+            }
+        }
+        if (invalidActiveEffect != null) return invalidActiveEffect;
         if (i.getType() != Material.POTION) return null;
         Potion pot;
         try {
@@ -72,15 +81,7 @@ public class NIAManager extends Manager implements Listener {
             if (level < 0 || level > 1) return Message.REASON_POTION_INVALID_LEVEL;
             return null;
         }
-        final Iterator<PotionEffect> effects = pot.getEffects().iterator();
-        while (effects.hasNext()) {
-            final PotionEffect effect = effects.next();
-            final int level = effect.getAmplifier();
-            final int duration = effect.getDuration();
-            if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-            if (duration > 9600) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
-        }
-        return null;
+        return checkEffects(pot.getEffects());
     }
 
     @Override
@@ -185,6 +186,22 @@ public class NIAManager extends Manager implements Listener {
         for (Action action : config.actions) {
             action.perform(player, item, event, message);
         }
+    }
+
+    private Message checkEffect(PotionEffect effect) {
+        final int level = effect.getAmplifier();
+        final int duration = effect.getDuration();
+        if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
+        if (duration > 9600) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        return null;
+    }
+
+    private Message checkEffects(Collection<PotionEffect> collection) {
+        for (PotionEffect effect : collection) {
+            Message message = checkEffect(effect);
+            if (message != null) return message;
+        }
+        return null;
     }
 
     private String locationToString(Location loc) {
