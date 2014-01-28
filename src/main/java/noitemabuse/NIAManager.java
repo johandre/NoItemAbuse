@@ -34,22 +34,21 @@ public class NIAManager extends Manager implements Listener {
     }
 
     public void check(Player p, ItemStack i, Event e, EventMessage eventMessage, String... args) {
-        if (i == null || p.hasPermission("noitemabuse.allow")) return;
-        String message = Message.format(p, eventMessage, args);
+        if (i == null || i.getTypeId() == 0 || p.hasPermission("noitemabuse.allow")) return;
         if (config.removeInvalidPotions) {
             Message reason = checkPotionAndEffects(p, i);
             if (reason != null) {
-                remove(p, i, e, message);
+                remove(p, i, e, Message.format(p, eventMessage, args));
             }
         }
         if (i.getDurability() < config.minDurability) {
-            remove(p, i, e, message);
+            remove(p, i, e, Message.format(p, eventMessage, args));
         } else {
             final Map<Enchantment, Integer> enchantments = i.getEnchantments();
             for (Enchantment enchant : enchantments.keySet()) {
                 final int level = enchantments.get(enchant), max = enchant.getMaxLevel();
                 if (level > max) {
-                    remove(p, i, e, message);
+                    remove(p, i, e, Message.format(p, eventMessage, args));
                     return;
                 }
             }
