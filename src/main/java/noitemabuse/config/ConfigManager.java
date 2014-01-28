@@ -19,6 +19,7 @@ public class ConfigManager extends Manager {
     public boolean removeInvalidPotions = true;
     public boolean logAllPlayers = true;
     public boolean purifyAll = true;
+    public boolean notifyConsole = true;
     public int maxEffectDurationTicks = 9600;
     public short minDurability = 0;
     public String actionString = "remove,cancel,notify,log";
@@ -58,6 +59,7 @@ public class ConfigManager extends Manager {
         removeInvalidPotions = cfg.getBoolean("remove_invalid_potions", removeInvalidPotions);
         logAllPlayers = cfg.getBoolean("log_all_players", logAllPlayers);
         purifyAll = cfg.getBoolean("purify_all", purifyAll);
+        notifyConsole = cfg.getBoolean("notify_console", notifyConsole);
         maxEffectDurationTicks = cfg.getInt("max_potion_effect_duration_ticks", maxEffectDurationTicks);
         minDurability = (short) cfg.getInt("min_durability", minDurability);
         String as = cfg.getString("actions", actionString).toLowerCase();

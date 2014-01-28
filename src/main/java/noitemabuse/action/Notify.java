@@ -24,6 +24,7 @@ public class Notify extends Log {
                 p.sendMessage(message);
             }
         }
+        if(config.notifyConsole) plugin.getServer().getConsoleSender().sendMessage(message);
     }
 
     private boolean shouldNotify(Player player) {
