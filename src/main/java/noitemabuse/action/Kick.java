@@ -9,31 +9,23 @@ import noitemabuse.config.Message;
 
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 
-public class Remove extends Action {
-    public Remove(Plugin plugin) {
+public class Kick extends Action {
+    public Kick(Plugin plugin) {
         super(plugin);
     }
 
     @Override
     public Message getMessage() {
-        return Message.REMOVE;
+        return Message.KICK;
     }
 
     @Override
     public String getName() {
-        return "remove";
+        return "kick";
     }
 
     @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
-        if (item == null) return;
-        player.getInventory().remove(item);
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < armor.length; i++) {
-            if (armor[i] == item) {
-                armor[i] = null;
-            }
-        }
-        player.getInventory().setArmorContents(armor);
+        player.kickPlayer(Message.format(player, Message.KICK_MESSAGE, "$item:" + manager.getItemName(item)));
     }
 }

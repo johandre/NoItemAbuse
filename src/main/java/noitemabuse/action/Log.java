@@ -10,19 +10,13 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
-import noitemabuse.NIAManager;
-import noitemabuse.config.*;
+import noitemabuse.config.Message;
 
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public class Log extends Action {
-    protected NIAManager manager;
-    protected ConfigManager config;
-
     public Log(Plugin plugin) {
         super(plugin);
-        config = plugin.getManager(ConfigManager.class);
-        manager = plugin.getManager(NIAManager.class);
     }
 
     @Override
@@ -35,13 +29,13 @@ public class Log extends Action {
         if (item == null) {
             itemName = Message.ITEM_POTION_EFFECT.getMessage();
         } else {
-            itemName = item.getType().toString().toLowerCase().replace("_", " ");
+            itemName = manager.getItemName(item);
         }
         Enchantment enchant = null;
         int level = 0, max = 0;
         for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
-            level = ent.getValue();
             Enchantment key = ent.getKey();
+            level = ent.getValue();
             max = key.getMaxLevel();
             if (level > max) {
                 enchant = key;
@@ -93,12 +87,8 @@ public class Log extends Action {
     private PotionEffect getInvalidEffect(ItemStack potion) {
         try {
             Potion pot = Potion.fromItemStack(potion);
-            final Iterator<PotionEffect> effects = pot.getEffects().iterator();
-            while (effects.hasNext()) {
-                final PotionEffect effect = effects.next();
-                final int level = effect.getAmplifier();
-                final int duration = effect.getDuration();
-                if (level > 2 || duration > 9600) return effect;
+            for (PotionEffect effect : pot.getEffects()) {
+                if (manager.checkEffect(effect) != null) return effect;
             }
         } catch (Throwable ex) {}
         return null;

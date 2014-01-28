@@ -8,6 +8,7 @@ public enum EventMessage implements MessageEnum {
     INVENTORY_CLICK("in inventory of $player"),
     CONTAINER_OPEN("in $container at $location opened by $player"),
     ITEM_DROP("dropped by $player at $location"),
+    POTION_DRINK("drunk by $player"),
     POTION_THROW("thrown by $player"),
     //
     ;

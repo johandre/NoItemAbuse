@@ -1,6 +1,7 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.action;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -9,31 +10,23 @@ import noitemabuse.config.Message;
 
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 
-public class Remove extends Action {
-    public Remove(Plugin plugin) {
+public class Ban extends Action {
+    public Ban(Plugin plugin) {
         super(plugin);
     }
 
     @Override
     public Message getMessage() {
-        return Message.REMOVE;
+        return Message.BAN;
     }
 
     @Override
     public String getName() {
-        return "remove";
+        return "ban";
     }
 
     @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
-        if (item == null) return;
-        player.getInventory().remove(item);
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < armor.length; i++) {
-            if (armor[i] == item) {
-                armor[i] = null;
-            }
-        }
-        player.getInventory().setArmorContents(armor);
+        plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), Message.format(player, Message.BAN_COMMAND, "$item:" + manager.getItemName(item)));
     }
 }

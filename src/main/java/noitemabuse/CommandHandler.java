@@ -29,18 +29,21 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0 || !sender.hasPermission("noitemabuse.notify")) return false;
-        if (!(sender instanceof Player)) return false;
-        Player player = (Player) sender;
-        String name = sender.getName().toLowerCase();
-        if (args[0].equals("toggle")) {
-            player.sendMessage(getToggleMessage(name).getMessage());
+        if (args.length == 0) return false;
+        final String cmd = args[0], name = sender.getName().toLowerCase();
+        if (!(sender instanceof Player) && !cmd.equals("reload")) return false;
+        if (cmd.equals("toggle") && sender.hasPermission("noitemabuse.notify")) {
+            Player player = (Player) sender;
             if (!config.toggled.contains(name)) {
                 add(player, name);
             } else {
                 remove(player, name);
             }
-        }
+            sender.sendMessage(getToggleMessage(name).getMessage());
+        } else if (cmd.equals("reload") && sender.hasPermission("noitemabuse.reload")) {
+            config.init();
+            sender.sendMessage(Message.COMMAND_RELOAD.getMessage());
+        } else return false;
         return true;
     }
 

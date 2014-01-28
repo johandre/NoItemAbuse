@@ -20,6 +20,7 @@ import org.bukkit.potion.*;
 
 import noitemabuse.action.Action;
 import noitemabuse.config.*;
+import noitemabuse.task.CheckPotionEffectsTask;
 
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 import eu.icecraft_mc.frozenlib_R1.manager.Manager;
@@ -35,20 +36,18 @@ public class NIAManager extends Manager implements Listener {
     public void check(Player p, ItemStack i, Event e, EventMessage eventMessage, String... args) {
         if (i == null || p.hasPermission("noitemabuse.allow")) return;
         String message = Message.format(p, eventMessage, args);
-        final int durability = i.getDurability();
-        final Map<Enchantment, Integer> enchantments = i.getEnchantments();
         if (config.removeInvalidPotions) {
             Message reason = checkPotionAndEffects(p, i);
             if (reason != null) {
                 remove(p, i, e, message);
             }
         }
-        if (durability < -1) {
+        if (i.getDurability() < 0) {
             remove(p, i, e, message);
         } else {
+            final Map<Enchantment, Integer> enchantments = i.getEnchantments();
             for (Enchantment enchant : enchantments.keySet()) {
-                final int level = enchantments.get(enchant);
-                final int max = enchant.getMaxLevel();
+                final int level = enchantments.get(enchant), max = enchant.getMaxLevel();
                 if (level > max) {
                     remove(p, i, e, message);
                     return;
@@ -57,7 +56,7 @@ public class NIAManager extends Manager implements Listener {
         }
     }
 
-    public Message checkPotionAndEffects(Player p, ItemStack i) {
+    public Message checkActiveEffects(Player p) {
         Message invalidActiveEffect = null;
         for (PotionEffect effect : p.getActivePotionEffects()) {
             Message reason = checkEffect(effect);
@@ -66,6 +65,19 @@ public class NIAManager extends Manager implements Listener {
                 p.removePotionEffect(effect.getType());
             }
         }
+        return invalidActiveEffect;
+    }
+
+    public Message checkEffect(PotionEffect effect) {
+        final int level = effect.getAmplifier();
+        final int duration = effect.getDuration();
+        if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
+        if (duration > 9600 || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        return null;
+    }
+
+    public Message checkPotionAndEffects(Player p, ItemStack i) {
+        Message invalidActiveEffect = checkActiveEffects(p);
         if (invalidActiveEffect != null) return invalidActiveEffect;
         if (i.getType() != Material.POTION) return null;
         Potion pot;
@@ -136,14 +148,14 @@ public class NIAManager extends Manager implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent e) {
         // Do the same as onInventoryOpen, if the inventory type is PLAYER (because clients don't tell the server when they open their inventory)
-        if (event.getInventory().getType() != InventoryType.PLAYER) return;
-        if (!(event.getWhoClicked() instanceof Player)) return;
-        Player p = (Player) event.getWhoClicked();
-        ItemStack[] items = event.getInventory().getContents();
+        if (e.getInventory().getType() != InventoryType.PLAYER) return;
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Player p = (Player) e.getWhoClicked();
+        ItemStack[] items = e.getInventory().getContents();
         for (ItemStack i : items) {
-            check(p, i, event, INVENTORY_CLICK);
+            check(p, i, e, INVENTORY_CLICK);
         }
     }
 
@@ -173,6 +185,13 @@ public class NIAManager extends Manager implements Listener {
         check(p, i, event, ITEM_DROP, "$location:" + locationToString(p.getLocation()));
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onPotionDrink(PlayerItemConsumeEvent event) {
+        ItemStack item = event.getItem();
+        if (!config.removeInvalidPotions || item.getType() != Material.POTION) return;
+        new CheckPotionEffectsTask(this, item, event).schedule(plugin);
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPotionThrow(PlayerInteractEvent e) {
         Player p = e.getPlayer();
@@ -188,14 +207,6 @@ public class NIAManager extends Manager implements Listener {
         }
     }
 
-    private Message checkEffect(PotionEffect effect) {
-        final int level = effect.getAmplifier();
-        final int duration = effect.getDuration();
-        if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-        if (duration > 9600) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
-        return null;
-    }
-
     private Message checkEffects(Collection<PotionEffect> collection) {
         for (PotionEffect effect : collection) {
             Message message = checkEffect(effect);
@@ -206,5 +217,9 @@ public class NIAManager extends Manager implements Listener {
 
     private String locationToString(Location loc) {
         return "[" + loc.getWorld().getName() + "] " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+    }
+
+    public String getItemName(ItemStack item) {
+        return item.getType().toString().toLowerCase().replace("_", " ");
     }
 }

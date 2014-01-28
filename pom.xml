@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>noitemabuse</groupId>
     <artifactId>NoItemAbuse</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <name>NoItemAbuse</name>
     <url>http://github.com/ruany/NoItemAbuse</url>
     
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.2.5-R3.1</version>
+            <version>1.5.1-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

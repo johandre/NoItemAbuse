@@ -15,6 +15,8 @@ public enum Message implements MessageEnum {
     LOG("Item used: $item $event ($reason)"),
     ALERT_PREFIX(RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + GOLD),
     ITEM_POTION_EFFECT("potion effect"),
+    KICK_MESSAGE("Kicked for having invalid $item"),
+    BAN_COMMAND("/ban $player Banned for having invalid $item"),
     REASON_BANNED_ITEM("banned item"),
     REASON_OVERDURABLE("durability $durability < 0"),
     REASON_OVERENCHANT("$enchant enchantment level $level > $max"),
@@ -22,7 +24,8 @@ public enum Message implements MessageEnum {
     REASON_POTION_INVALID_EFFECT_LEVEL("invalid potion effect $type: $effectlevel > 2"),
     REASON_POTION_INVALID_EFFECT_DURATION("invalid potion effect $type: $duration > 9600"),
     COMMAND_TOGGLE_ON(GREEN + "Alerts have been toggled on."),
-    COMMAND_TOGGLE_OFF(GREEN + "Alerts have been toggled off.");
+    COMMAND_TOGGLE_OFF(GREEN + "Alerts have been toggled off."),
+    COMMAND_RELOAD(GREEN + "Configuration reloaded successfully.");
     private String message;
 
     private Message(String message) {
