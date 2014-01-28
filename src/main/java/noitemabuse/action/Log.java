@@ -42,14 +42,13 @@ public class Log extends Action {
                 break;
             }
         }
-        final String enchantName = enchant.getName();
         int durability = item.getDurability();
         List<String> reasons = new ArrayList<String>(5);
         if (durability < 0) {
             reasons.add(Message.format(player, Message.REASON_OVERDURABLE, "$durability:" + durability));
         }
         if (enchant != null) {
-            reasons.add(Message.format(player, Message.REASON_OVERENCHANT, "$enchant:" + enchantName, "$level:" + level, "$max:" + max));
+            reasons.add(Message.format(player, Message.REASON_OVERENCHANT, "$enchant:" + enchant.getName(), "$level:" + level, "$max:" + max));
         }
         if (config.removeInvalidPotions) {
             Message reason = manager.checkPotionAndEffects(player, item);
