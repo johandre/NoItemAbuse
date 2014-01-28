@@ -44,7 +44,7 @@ public class Log extends Action {
         }
         int durability = item.getDurability();
         List<String> reasons = new ArrayList<String>(5);
-        if (durability < 0) {
+        if (durability < config.minDurability) {
             reasons.add(Message.format(player, Message.REASON_OVERDURABLE, "$durability:" + durability));
         }
         if (enchant != null) {
@@ -62,7 +62,9 @@ public class Log extends Action {
             reasonbuilder.append(r).append(", ");
         }
         String reason = reasonbuilder.toString();
-        reason = reason.substring(0, reason.length() - 2);
+        if (!reasons.isEmpty()) {
+            reason = reason.substring(0, reason.length() - 2);
+        }
         String message = config.getActionMessage(player, "$item:" + itemName, "$reason:" + reason, "$event:" + eventMessage);
         return message;
     }
