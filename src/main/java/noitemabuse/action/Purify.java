@@ -31,7 +31,7 @@ public class Purify extends Action {
 
     @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
-        if (item.getDurability() < 0) {
+        if (item.getDurability() < config.minDurability) {
             item.setDurability(NORMAL_DURABILITY);
         }
         if (config.purifyAll) {

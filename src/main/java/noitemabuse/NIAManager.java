@@ -42,7 +42,7 @@ public class NIAManager extends Manager implements Listener {
                 remove(p, i, e, message);
             }
         }
-        if (i.getDurability() < 0) {
+        if (i.getDurability() < config.minDurability) {
             remove(p, i, e, message);
         } else {
             final Map<Enchantment, Integer> enchantments = i.getEnchantments();
@@ -72,7 +72,7 @@ public class NIAManager extends Manager implements Listener {
         final int level = effect.getAmplifier();
         final int duration = effect.getDuration();
         if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-        if (duration > 9600 || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        if (duration > config.maxEffectDurationTicks || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
         return null;
     }
 
