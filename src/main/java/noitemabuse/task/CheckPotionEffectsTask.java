@@ -9,17 +9,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
-import noitemabuse.NIAManager;
+import noitemabuse.CheckManager;
 
 import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public class CheckPotionEffectsTask implements Task {
-    private NIAManager manager;
+    private CheckManager manager;
     private Event event;
     private ItemStack item;
     private Player player;
 
-    public CheckPotionEffectsTask(NIAManager manager, ItemStack item, PlayerEvent event) {
+    public CheckPotionEffectsTask(CheckManager manager, ItemStack item, PlayerEvent event) {
         this.manager = manager;
         this.event = event;
         this.item = item;

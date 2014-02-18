@@ -30,7 +30,7 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) return false;
-        final String cmd = args[0], name = sender.getName().toLowerCase();
+        final String name = sender.getName().toLowerCase(), cmd = args[0];
         if (!(sender instanceof Player) && !cmd.equals("reload")) return false;
         if (cmd.equals("toggle") && sender.hasPermission("noitemabuse.notify")) {
             Player player = (Player) sender;
