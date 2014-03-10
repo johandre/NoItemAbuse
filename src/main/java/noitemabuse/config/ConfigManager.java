@@ -52,7 +52,12 @@ public class ConfigManager extends Manager {
         Config cfg = new Config(plugin);
         actionList = parseActions(values.actions.split(","));
         for (MessageEnum message : Message.getMessages()) {
-            message.setMessage(cfg.getString(message.getNode(), message.getMessage()));
+            String node = message.getNode(), value = message.getMessage();
+            if (cfg.get(node) == null) {
+                cfg.set(node, value);
+            } else {
+                message.setMessage(cfg.getString(node, value));
+            }
         }
         cfg.save();
     }
