@@ -53,7 +53,7 @@ public class EventManager extends Manager implements Listener {
         if (e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
             for (ItemStack i : p.getInventory().getArmorContents()) {
-                manager.check(p, i, e, RECEIVED_ATTACK);
+                    manager.check(p, i, e, RECEIVED_ATTACK);
             }
         }
     }
