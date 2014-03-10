@@ -26,9 +26,10 @@ public class Remove extends Action {
     @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
         player.getInventory().remove(item);
+        System.out.println("remove.perform()");
         ItemStack[] armor = player.getInventory().getArmorContents();
         for (int i = 0; i < armor.length; i++) {
-            if (armor[i] == item) {
+            if (item.equals(armor)) {
                 armor[i] = null;
             }
         }
