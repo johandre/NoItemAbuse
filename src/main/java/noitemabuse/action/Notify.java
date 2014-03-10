@@ -6,9 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
+import reflectlib.bukkit.Plugin;
 import noitemabuse.config.Message;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public class Notify extends Log {
     public Notify(Plugin plugin) {
@@ -24,12 +23,12 @@ public class Notify extends Log {
                 p.sendMessage(message);
             }
         }
-        if (config.notifyConsole) {
+        if (config.values.notify_console) {
             plugin.getServer().getConsoleSender().sendMessage(message);
         }
     }
 
     private boolean shouldNotify(Player player) {
-        return config.toggled.contains(player.getName().toLowerCase()) != config.defaultNotify;
+        return config.getToggledPlayers().contains(player.getName().toLowerCase()) != config.values.default_notify;
     }
 }

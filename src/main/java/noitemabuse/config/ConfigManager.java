@@ -5,38 +5,28 @@ import java.util.*;
 
 import org.bukkit.entity.Player;
 
+import reflectlib.bukkit.Plugin;
+import reflectlib.manager.Manager;
 import noitemabuse.action.Action;
 
-import eu.icecraft_mc.frozenlib_R1.Plugin;
-import eu.icecraft_mc.frozenlib_R1.manager.Manager;
-import eu.icecraft_mc.frozenlib_R1.util.ClassFinder;
-import eu.icecraft_mc.frozenlib_R1.util.config.SimpleConfiguration;
-
 public class ConfigManager extends Manager {
-    public List<String> toggled = new ArrayList<String>();
-    public boolean defaultNotify = true;
-    public boolean multiAlert = false;
-    public boolean removeInvalidPotions = true;
-    public boolean logAllPlayers = true;
-    public boolean purifyAll = true;
-    public boolean notifyConsole = true;
-    public int maxEffectDurationTicks = 9600;
-    public short minDurability = 0;
-    public String actionString = "remove,cancel,notify,log";
-    public Action[] actions;
+    public final Config values;
+    private List<String> toggled = new ArrayList<String>();
+    private Action[] actionList;
     private Action[] allActions;
 
     public ConfigManager(Plugin parent) {
         super(parent);
+        values = new Config(parent);
     }
 
     public String getActionMessage(Player p, String... args) {
-        if (multiAlert) {
+        if (values.multi_alert) {
             StringBuilder alert = new StringBuilder();
-            for (Action action : actions) {
+            for (Action action : actionList) {
                 Message msg = action.getMessage();
                 // prevent multi-alert from being *too* spammy
-                if (actions.length > 1 && (msg == Message.LOG || msg == Message.CANCEL)) {
+                if (actionList.length > 1 && (msg == Message.LOG || msg == Message.CANCEL)) {
                     continue;
                 }
                 alert.append(Message.format(p, msg, args)).append("\n");
@@ -44,35 +34,31 @@ public class ConfigManager extends Manager {
             String str = alert.toString();
             return str.substring(0, str.length() - 1);
         } else {
-            Message msg = actions[0].getMessage();
+            Message msg = actionList[0].getMessage();
             return Message.format(p, msg, args);
         }
     }
 
+    public Action[] getActions() {
+        return actionList;
+    }
+
+    public List<String> getToggledPlayers() {
+        return toggled;
+    }
+
     @Override
     public void init() {
-        SimpleConfiguration cfg = new SimpleConfiguration();
-        String folder = plugin.getDataFolder().getAbsolutePath();
-        cfg.init(folder);
-        defaultNotify = cfg.getBoolean("default_notify", defaultNotify);
-        multiAlert = cfg.getBoolean("multi_alert", multiAlert);
-        removeInvalidPotions = cfg.getBoolean("remove_invalid_potions", removeInvalidPotions);
-        logAllPlayers = cfg.getBoolean("log_all_players", logAllPlayers);
-        purifyAll = cfg.getBoolean("purify_all", purifyAll);
-        notifyConsole = cfg.getBoolean("notify_console", notifyConsole);
-        maxEffectDurationTicks = cfg.getInt("max_potion_effect_duration_ticks", maxEffectDurationTicks);
-        minDurability = (short) cfg.getInt("min_durability", minDurability);
-        String as = cfg.getString("actions", actionString).toLowerCase();
-        actions = parseActions(as.split(","));
+        Config cfg = new Config(plugin);
+        cfg.init();
+        actionList = parseActions(values.actions.split(","));
         for (MessageEnum message : Message.getMessages()) {
             message.setMessage(cfg.getString(message.getNode(), message.getMessage()));
         }
-        cfg.save(folder);
     }
 
     private Action[] getAllActions() {
-        ClassFinder finder = plugin.getClassFinder();
-        List<Action> actions = finder.getInstancesOfType(finder.getJarPath(getClass()), "", Action.class, new Class[] { Plugin.class }, plugin);
+        List<Action> actions = plugin.getClassFinder().getInstancesOfType(Action.class, new Class[] { Plugin.class }, plugin);
         return actions.toArray(new Action[actions.size()]);
     }
 
@@ -82,7 +68,7 @@ public class ConfigManager extends Manager {
         }
         List<Action> list = new ArrayList<Action>();
         for (String str : actions) {
-            str = str.trim();
+            str = str.trim().toLowerCase();
             for (Action action : allActions) {
                 if (action.getName().equals(str)) {
                     list.add(action);

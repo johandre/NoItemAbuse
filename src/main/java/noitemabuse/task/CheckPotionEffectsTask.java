@@ -9,9 +9,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
+import reflectlib.bukkit.Plugin;
 import noitemabuse.CheckManager;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public class CheckPotionEffectsTask implements Task {
     private CheckManager manager;

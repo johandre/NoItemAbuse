@@ -13,11 +13,12 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import eu.icecraft_mc.frozenlib_R1.Plugin;
-import eu.icecraft_mc.frozenlib_R1.manager.Manager;
+import reflectlib.bukkit.Plugin;
+import reflectlib.manager.Manager;
 
 public class EventManager extends Manager implements Listener {
     private CheckManager manager;
+
     public EventManager(Plugin parent) {
         super(parent);
     }
@@ -94,7 +95,7 @@ public class EventManager extends Manager implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPotionDrink(PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
-        if (!manager.config.removeInvalidPotions || item.getType() != Material.POTION) return;
+        if (!manager.config.values.remove_invalid_potions || item.getType() != Material.POTION) return;
         manager.checkEffectsAfterEvent(event, item);
     }
 

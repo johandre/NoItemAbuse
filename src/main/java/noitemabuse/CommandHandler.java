@@ -6,10 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import reflectlib.bukkit.*;
+import reflectlib.manager.Manager;
 import noitemabuse.config.*;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
-import eu.icecraft_mc.frozenlib_R1.manager.*;
 
 public class CommandHandler extends AbstractCommandManager implements Listener {
     private ConfigManager config;
@@ -34,7 +33,7 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
         if (!(sender instanceof Player) && !cmd.equals("reload")) return false;
         if (cmd.equals("toggle") && sender.hasPermission("noitemabuse.notify")) {
             Player player = (Player) sender;
-            if (!config.toggled.contains(name)) {
+            if (!config.getToggledPlayers().contains(name)) {
                 add(player, name);
             } else {
                 remove(player, name);
@@ -50,18 +49,18 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         String name = event.getPlayer().getName().toLowerCase();
-        config.toggled.remove(name);
+        config.getToggledPlayers().remove(name);
     }
 
     void add(Player player, String name) {
-        config.toggled.add(name);
+        config.getToggledPlayers().add(name);
     }
 
     Message getToggleMessage(String name) {
-        return config.toggled.contains(name) != config.defaultNotify ? Message.COMMAND_TOGGLE_ON : Message.COMMAND_TOGGLE_OFF;
+        return config.getToggledPlayers().contains(name) != config.values.default_notify ? Message.COMMAND_TOGGLE_ON : Message.COMMAND_TOGGLE_OFF;
     }
 
     void remove(Player player, String name) {
-        config.toggled.remove(name);
+        config.getToggledPlayers().remove(name);
     }
 }

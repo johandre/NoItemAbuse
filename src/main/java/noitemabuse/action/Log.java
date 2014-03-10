@@ -10,9 +10,8 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
+import reflectlib.bukkit.Plugin;
 import noitemabuse.config.Message;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public class Log extends Action {
     public Log(Plugin plugin) {
@@ -44,13 +43,13 @@ public class Log extends Action {
         }
         int durability = item.getDurability();
         List<String> reasons = new ArrayList<String>(5);
-        if (durability < config.minDurability) {
+        if (durability < config.values.min_durability) {
             reasons.add(Message.format(player, Message.REASON_OVERDURABLE, "$durability:" + durability));
         }
         if (enchant != null) {
             reasons.add(Message.format(player, Message.REASON_OVERENCHANT, "$enchant:" + enchant.getName(), "$level:" + level, "$max:" + max));
         }
-        if (config.removeInvalidPotions) {
+        if (config.values.remove_invalid_potions) {
             Message reason = manager.checkPotionAndEffects(player, item);
             if (reason != null) {
                 reasons.add(Message.format(player, reason, "$type:" + getInvalidType(item), "$level:" + manager.getPotionLevel(item), "$effectlevel:" + getInvalidEffectLevel(item), "$duration:"
@@ -108,7 +107,7 @@ public class Log extends Action {
     }
 
     private void log(Player p, String message) {
-        if (config.logAllPlayers || p.hasPermission("noitemabuse.log")) {
+        if (config.values.log_all_players || p.hasPermission("noitemabuse.log")) {
             manager.log.log(message);
         }
     }

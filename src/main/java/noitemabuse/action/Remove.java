@@ -5,9 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
+import reflectlib.bukkit.Plugin;
 import noitemabuse.config.Message;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public class Remove extends Action {
     public Remove(Plugin plugin) {

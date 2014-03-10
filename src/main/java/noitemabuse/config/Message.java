@@ -16,7 +16,7 @@ public enum Message implements MessageEnum {
     ALERT_PREFIX(RED + "[" + DARK_RED + "NoItemAbuse" + RED + "] " + GOLD),
     ITEM_POTION_EFFECT("potion effect"),
     KICK_MESSAGE("Kicked for having invalid $item"),
-    BAN_COMMAND("/ban $player Banned for having invalid $item"),
+    BAN_COMMAND("ban $player Banned for having invalid $item"),
     REASON_BANNED_ITEM("banned item"),
     REASON_OVERDURABLE("durability $durability < 0"),
     REASON_OVERENCHANT("$enchant enchantment level $level > $max"),

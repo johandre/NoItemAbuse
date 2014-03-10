@@ -4,20 +4,19 @@ package noitemabuse;
 import java.io.File;
 import java.util.*;
 
-import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
+import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
+import reflectlib.bukkit.Plugin;
+import reflectlib.manager.Manager;
 import noitemabuse.action.Action;
 import noitemabuse.config.*;
 import noitemabuse.task.CheckPotionEffectsTask;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
-import eu.icecraft_mc.frozenlib_R1.manager.Manager;
 
 public class CheckManager extends Manager {
     public FileLogger log;
@@ -29,22 +28,26 @@ public class CheckManager extends Manager {
 
     public void check(Player player, ItemStack item, Event event, EventMessage eventMessage, String... args) {
         if (item == null || item.getTypeId() == 0 || player.hasPermission("noitemabuse.allow")) return;
-        if (config.removeInvalidPotions) {
+        if (config.values.remove_invalid_potions) {
             Message reason = checkPotionAndEffects(player, item);
             if (reason != null) {
                 performActions(player, item, event, Message.format(player, eventMessage, args));
             }
         }
-        if (item.getDurability() < config.minDurability) {
+        if (item.getDurability() < config.values.min_durability) {
             performActions(player, item, event, Message.format(player, eventMessage, args));
         } else {
-            final Map<Enchantment, Integer> enchantments = item.getEnchantments();
-            for (Enchantment enchant : enchantments.keySet()) {
-                final int level = enchantments.get(enchant), max = enchant.getMaxLevel();
-                if (level > max) {
-                    performActions(player, item, event, Message.format(player, eventMessage, args));
-                    return;
+            try {
+                final Map<Enchantment, Integer> enchantments = item.getEnchantments();
+                for (Enchantment enchant : enchantments.keySet()) {
+                    final int level = enchantments.get(enchant), max = enchant.getMaxLevel();
+                    if (level > max) {
+                        performActions(player, item, event, Message.format(player, eventMessage, args));
+                        return;
+                    }
                 }
+            } catch (NullPointerException ex) {
+                // thanks Bukkit. CraftItemStack:278 NPE
             }
         }
     }
@@ -64,7 +67,7 @@ public class CheckManager extends Manager {
     public Message checkEffect(PotionEffect effect) {
         final int level = effect.getAmplifier(), duration = effect.getDuration();
         if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-        if (duration > config.maxEffectDurationTicks || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        if (duration > config.values.max_potion_effect_duration_ticks || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
         return null;
     }
 
@@ -117,7 +120,7 @@ public class CheckManager extends Manager {
     }
 
     public void performActions(Player player, ItemStack item, Event event, String message) {
-        for (Action action : config.actions) {
+        for (Action action : config.getActions()) {
             action.perform(player, item, event, message);
         }
     }

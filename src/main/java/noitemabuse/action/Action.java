@@ -5,10 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
+import reflectlib.bukkit.Plugin;
 import noitemabuse.CheckManager;
 import noitemabuse.config.*;
-
-import eu.icecraft_mc.frozenlib_R1.Plugin;
 
 public abstract class Action {
     protected Plugin plugin;
