@@ -50,11 +50,11 @@ public class ConfigManager extends Manager {
     @Override
     public void init() {
         Config cfg = new Config(plugin);
-        cfg.init();
         actionList = parseActions(values.actions.split(","));
         for (MessageEnum message : Message.getMessages()) {
             message.setMessage(cfg.getString(message.getNode(), message.getMessage()));
         }
+        cfg.save();
     }
 
     private Action[] getAllActions() {
