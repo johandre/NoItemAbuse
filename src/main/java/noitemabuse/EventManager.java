@@ -25,6 +25,7 @@ public class EventManager extends Manager implements Listener {
 
     @Override
     public void init() {
+        manager = plugin.getManager(CheckManager.class);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
