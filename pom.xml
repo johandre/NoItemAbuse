@@ -87,9 +87,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>eu.icecraft_mc</groupId>
-            <artifactId>frozenlib</artifactId>
-            <version>1.2.3</version>
+            <groupId>reflectlib</groupId>
+            <artifactId>ReflectLib</artifactId>
+            <version>1.3</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
