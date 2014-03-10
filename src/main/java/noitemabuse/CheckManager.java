@@ -3,6 +3,7 @@ package noitemabuse;
 
 import java.io.File;
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -38,9 +39,9 @@ public class CheckManager extends Manager {
             performActions(player, item, event, Message.format(player, eventMessage, args));
         } else {
             try {
-                final Map<Enchantment, Integer> enchantments = item.getEnchantments();
-                for (Enchantment enchant : enchantments.keySet()) {
-                    final int level = enchantments.get(enchant), max = enchant.getMaxLevel();
+                for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
+                    Enchantment key = ent.getKey();
+                    int level = ent.getValue(), max = key.getMaxLevel();
                     if (level > max) {
                         performActions(player, item, event, Message.format(player, eventMessage, args));
                         return;
