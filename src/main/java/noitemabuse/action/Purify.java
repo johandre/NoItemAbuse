@@ -1,7 +1,7 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.action;
 
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -46,9 +46,9 @@ public class Purify extends Action {
                 item.removeEnchantment(enchant);
             }
         } else {
-            final Map<Enchantment, Integer> enchantments = item.getEnchantments();
-            for (Enchantment enchant : enchantments.keySet()) {
-                final int level = enchantments.get(enchant), max = enchant.getMaxLevel();
+            for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
+                Enchantment enchant = ent.getKey();
+                final int level = ent.getValue(), max = enchant.getMaxLevel();
                 if (level > max) {
                     item.removeEnchantment(enchant);
                     return;
