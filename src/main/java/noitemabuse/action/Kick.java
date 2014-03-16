@@ -14,16 +14,6 @@ public class Kick extends Action {
     }
 
     @Override
-    public Message getMessage() {
-        return Message.KICK;
-    }
-
-    @Override
-    public String getName() {
-        return "kick";
-    }
-
-    @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
         player.kickPlayer(Message.format(player, Message.KICK_MESSAGE, "$item:" + manager.getItemName(item)));
     }

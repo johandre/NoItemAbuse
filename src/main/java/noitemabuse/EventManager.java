@@ -36,24 +36,12 @@ public class EventManager extends Manager implements Listener {
         manager.check(p, i, e, BLOCK_BREAK);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onInventoryClick(InventoryClickEvent e) {
-        // Do the same as onInventoryOpen, if the inventory type is PLAYER (because clients don't tell the server when they open their inventory)
-        if (e.getInventory().getType() != InventoryType.PLAYER) return;
-        if (!(e.getWhoClicked() instanceof Player)) return;
-        Player p = (Player) e.getWhoClicked();
-        ItemStack[] items = e.getInventory().getContents();
-        for (ItemStack i : items) {
-            manager.check(p, i, e, INVENTORY_CLICK);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
             for (ItemStack i : p.getInventory().getArmorContents()) {
-                    manager.check(p, i, e, RECEIVED_ATTACK);
+                manager.check(p, i, e, RECEIVED_ATTACK);
             }
         }
     }
@@ -64,6 +52,18 @@ public class EventManager extends Manager implements Listener {
             Player p = (Player) e.getDamager();
             ItemStack i = p.getItemInHand();
             manager.check(p, i, e, ATTACK);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInventoryClick(InventoryClickEvent e) {
+        // Do the same as onInventoryOpen, if the inventory type is PLAYER (because clients don't tell the server when they open their inventory)
+        if (e.getInventory().getType() != InventoryType.PLAYER) return;
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Player p = (Player) e.getWhoClicked();
+        ItemStack[] items = e.getInventory().getContents();
+        for (ItemStack i : items) {
+            manager.check(p, i, e, INVENTORY_CLICK);
         }
     }
 

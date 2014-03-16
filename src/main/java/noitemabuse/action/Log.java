@@ -18,11 +18,6 @@ public class Log extends Action {
         super(plugin);
     }
 
-    @Override
-    public Message getMessage() {
-        return Message.LOG;
-    }
-
     public String getMessage(Player player, ItemStack item, Event event, String eventMessage) {
         final String itemName;
         if (item == null) {
@@ -43,7 +38,7 @@ public class Log extends Action {
         }
         int durability = item.getDurability();
         List<String> reasons = new ArrayList<String>(5);
-        if (durability < config.values.min_durability) {
+        if (durability < config.values.getInt("checks.durability.min_durability")) {
             reasons.add(Message.format(player, Message.REASON_OVERDURABLE, "$durability:" + durability));
         }
         if (enchant != null) {
@@ -66,11 +61,6 @@ public class Log extends Action {
         }
         String message = config.getActionMessage(player, "$item:" + itemName, "$reason:" + reason, "$event:" + eventMessage);
         return message;
-    }
-
-    @Override
-    public String getName() {
-        return "log";
     }
 
     @Override

@@ -6,21 +6,10 @@ import org.bukkit.event.*;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.config.Message;
 
 public class Cancel extends Action {
     public Cancel(Plugin plugin) {
         super(plugin);
-    }
-
-    @Override
-    public Message getMessage() {
-        return Message.CANCEL;
-    }
-
-    @Override
-    public String getName() {
-        return "cancel";
     }
 
     @Override

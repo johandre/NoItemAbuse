@@ -6,23 +6,17 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.CheckManager;
-import noitemabuse.config.*;
+import noitemabuse.Executor;
+import noitemabuse.config.Message;
 
-public abstract class Action {
-    protected Plugin plugin;
-    protected CheckManager manager;
-    protected ConfigManager config;
-
+public abstract class Action extends Executor {
     public Action(Plugin plugin) {
-        this.plugin = plugin;
-        config = plugin.getManager(ConfigManager.class);
-        manager = plugin.getManager(CheckManager.class);
+        super(plugin);
     }
 
-    public abstract Message getMessage();
-
-    public abstract String getName();
+    public Message getMessage() {
+        return Message.valueOf(getName().toUpperCase());
+    }
 
     public abstract void perform(Player player, ItemStack item, Event event, String message);
 }

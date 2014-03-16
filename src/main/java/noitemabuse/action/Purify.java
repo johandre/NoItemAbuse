@@ -9,7 +9,6 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.config.Message;
 
 public class Purify extends Action {
     private static final short NORMAL_DURABILITY = 0;
@@ -19,18 +18,8 @@ public class Purify extends Action {
     }
 
     @Override
-    public Message getMessage() {
-        return Message.PURIFY;
-    }
-
-    @Override
-    public String getName() {
-        return "purify";
-    }
-
-    @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
-        if (item.getDurability() < config.values.min_durability) {
+        if (item.getDurability() < config.values.getInt("checks.durability.min_durability")) {
             item.setDurability(NORMAL_DURABILITY);
         }
         if (config.values.purify_all) {

@@ -15,6 +15,11 @@ public class Notify extends Log {
     }
 
     @Override
+    public Message getMessage() {
+        return Message.LOG;
+    }
+
+    @Override
     public void perform(Player player, ItemStack item, Event event, String eventMessage) {
         String message = getMessage(player, item, event, eventMessage);
         message = Message.ALERT_PREFIX + message;

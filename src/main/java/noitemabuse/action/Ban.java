@@ -15,16 +15,6 @@ public class Ban extends Action {
     }
 
     @Override
-    public Message getMessage() {
-        return Message.BAN;
-    }
-
-    @Override
-    public String getName() {
-        return "ban";
-    }
-
-    @Override
     public void perform(Player player, ItemStack item, Event event, String message) {
         plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), Message.format(player, Message.BAN_COMMAND, "$item:" + manager.getItemName(item)));
     }

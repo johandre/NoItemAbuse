@@ -3,10 +3,8 @@ package noitemabuse;
 
 import java.io.File;
 import java.util.*;
-import java.util.Map.Entry;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerEvent;
@@ -16,11 +14,13 @@ import org.bukkit.potion.*;
 import reflectlib.bukkit.Plugin;
 import reflectlib.manager.Manager;
 import noitemabuse.action.Action;
+import noitemabuse.check.Check;
 import noitemabuse.config.*;
 import noitemabuse.task.CheckPotionEffectsTask;
 
 public class CheckManager extends Manager {
     public FileLogger log;
+    public Check[] checks;
     ConfigManager config;
 
     public CheckManager(Plugin parent) {
@@ -29,26 +29,9 @@ public class CheckManager extends Manager {
 
     public void check(Player player, ItemStack item, Event event, EventMessage eventMessage, String... args) {
         if (item == null || item.getTypeId() == 0 || player.hasPermission("noitemabuse.allow")) return;
-        if (config.values.remove_invalid_potions) {
-            Message reason = checkPotionAndEffects(player, item);
-            if (reason != null) {
+        for (Check check : checks) {
+            if (check.check(player, item)) {
                 performActions(player, item, event, Message.format(player, eventMessage, args));
-            }
-        }
-        if (item.getDurability() < config.values.min_durability) {
-            performActions(player, item, event, Message.format(player, eventMessage, args));
-        } else {
-            try {
-                for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
-                    Enchantment key = ent.getKey();
-                    int level = ent.getValue(), max = key.getMaxLevel();
-                    if (level > max) {
-                        performActions(player, item, event, Message.format(player, eventMessage, args));
-                        return;
-                    }
-                }
-            } catch (NullPointerException ex) {
-                // thanks Bukkit. CraftItemStack:278 NPE
             }
         }
     }
@@ -70,6 +53,10 @@ public class CheckManager extends Manager {
         if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
         if (duration > config.values.max_potion_effect_duration_ticks || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
         return null;
+    }
+
+    public void checkEffectsAfterEvent(PlayerEvent event, ItemStack item) {
+        new CheckPotionEffectsTask(this, item, event).schedule(plugin);
     }
 
     public Message checkPotionAndEffects(Player player, ItemStack item) {
@@ -97,6 +84,16 @@ public class CheckManager extends Manager {
         log.close();
     }
 
+    public List<Check> getFailedChecks(Player player, ItemStack item) {
+        List<Check> failed = new ArrayList<Check>(checks.length);
+        for (Check check : checks) {
+            if (check.check(player, item)) {
+                failed.add(check);
+            }
+        }
+        return failed;
+    }
+
     public String getItemName(ItemStack item) {
         return item.getType().toString().toLowerCase().replace("_", " ");
     }
@@ -113,6 +110,8 @@ public class CheckManager extends Manager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        List<Check> list = plugin.getClassFinder().getInstancesOfType(Check.class, new Class[] { Plugin.class }, plugin);
+        checks = list.toArray(new Check[list.size()]);
     }
 
     @Override
@@ -132,9 +131,5 @@ public class CheckManager extends Manager {
             if (message != null) return message;
         }
         return null;
-    }
-
-    public void checkEffectsAfterEvent(PlayerEvent event, ItemStack item) {
-        new CheckPotionEffectsTask(this, item, event).schedule(plugin);
     }
 }

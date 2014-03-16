@@ -6,21 +6,10 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.config.Message;
 
 public class Remove extends Action {
     public Remove(Plugin plugin) {
         super(plugin);
-    }
-
-    @Override
-    public Message getMessage() {
-        return Message.REMOVE;
-    }
-
-    @Override
-    public String getName() {
-        return "remove";
     }
 
     @Override

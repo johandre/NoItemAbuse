@@ -7,7 +7,6 @@ import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import reflectlib.bukkit.*;
-import reflectlib.manager.Manager;
 import noitemabuse.config.*;
 
 public class CommandHandler extends AbstractCommandManager implements Listener {
@@ -20,11 +19,6 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
     @Override
     public void init() {
         this.config = plugin.getManager(ConfigManager.class);
-    }
-
-    @Override
-    public boolean loadAfter(Manager manager) {
-        return manager instanceof ConfigManager;
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

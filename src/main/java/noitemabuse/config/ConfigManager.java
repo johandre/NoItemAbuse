@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
 
 import reflectlib.bukkit.Plugin;
 import reflectlib.manager.Manager;
+import noitemabuse.CheckManager;
 import noitemabuse.action.Action;
+import noitemabuse.check.Check;
 
 public class ConfigManager extends Manager {
     public final Config values;
@@ -25,9 +27,8 @@ public class ConfigManager extends Manager {
             StringBuilder alert = new StringBuilder();
             for (Action action : actionList) {
                 Message msg = action.getMessage();
-                // prevent multi-alert from being *too* spammy
                 if (actionList.length > 1 && (msg == Message.LOG || msg == Message.CANCEL)) {
-                    continue;
+                    continue; // prevent multi-alert from being *too* spammy
                 }
                 alert.append(Message.format(p, msg, args)).append("\n");
             }
@@ -49,6 +50,7 @@ public class ConfigManager extends Manager {
 
     @Override
     public void init() {
+        CheckManager checkManager = plugin.getManager(CheckManager.class);
         Config cfg = new Config(plugin);
         actionList = parseActions(values.actions.split(","));
         for (MessageEnum message : Message.getMessages()) {
@@ -59,7 +61,18 @@ public class ConfigManager extends Manager {
                 message.setMessage(cfg.getString(node, value));
             }
         }
+        for (Check check : checkManager.checks) {
+            check.loadOptions();
+        }
+        for (Action action : actionList) {
+            action.loadOptions();
+        }
         cfg.save();
+    }
+
+    @Override
+    public boolean loadAfter(Manager manager) {
+        return manager instanceof CheckManager;
     }
 
     private Action[] getAllActions() {
