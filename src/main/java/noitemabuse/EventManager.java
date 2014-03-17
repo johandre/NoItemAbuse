@@ -93,13 +93,6 @@ public class EventManager extends Manager implements Listener {
         manager.check(p, i, event, ITEM_DROP, "$location:" + locationToString(p.getLocation()));
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPotionDrink(PlayerItemConsumeEvent event) {
-        ItemStack item = event.getItem();
-        if (!manager.config.values.remove_invalid_potions || item.getType() != Material.POTION) return;
-        manager.checkEffectsAfterEvent(event, item);
-    }
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPotionThrow(PlayerInteractEvent e) {
         Player p = e.getPlayer();

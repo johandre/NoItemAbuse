@@ -1,6 +1,8 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse;
 
+import org.bukkit.event.Listener;
+
 import reflectlib.bukkit.Plugin;
 import noitemabuse.config.*;
 
@@ -17,12 +19,16 @@ public abstract class Executor {
         options = getOptions();
     }
 
+    public boolean defaultEnabled() {
+        return true;
+    }
+
     public String getName() {
         return getClass().getSimpleName().toLowerCase();
     }
 
     public Options getOptions() {
-        return null;
+        return options;
     }
 
     public Plugin getPlugin() {
@@ -30,8 +36,16 @@ public abstract class Executor {
     }
 
     public void loadOptions() {
+        options = new Options(this);
         if (options != null) {
+            options.enabled = defaultEnabled();
             options.init();
+        }
+    }
+
+    public void registerEvents() {
+        if (this instanceof Listener) {
+            plugin.getServer().getPluginManager().registerEvents((Listener) this, plugin);
         }
     }
 }

@@ -13,4 +13,5 @@ public abstract class Check extends Executor {
     }
 
     public abstract boolean check(Player player, ItemStack item);
+    public abstract String getLogMessage(Player player, ItemStack item);
 }

@@ -51,7 +51,7 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
     }
 
     Message getToggleMessage(String name) {
-        return config.getToggledPlayers().contains(name) != config.values.default_notify ? Message.COMMAND_TOGGLE_ON : Message.COMMAND_TOGGLE_OFF;
+        return config.getToggledPlayers().contains(name) != config.values.getBoolean("actions.notify.default_notify") ? Message.COMMAND_TOGGLE_ON : Message.COMMAND_TOGGLE_OFF;
     }
 
     void remove(Player player, String name) {

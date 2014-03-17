@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
+import noitemabuse.config.Message;
 
 public class Enchantments extends Check {
     public Enchantments(Plugin plugin) {
@@ -16,9 +17,20 @@ public class Enchantments extends Check {
 
     @Override
     public boolean check(Player player, ItemStack item) {
+        return getInvalidEnchantment(player, item) != null;
+    }
+
+    public Entry<Enchantment, Integer> getInvalidEnchantment(Player player, ItemStack item) {
         for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
-            if (ent.getValue() > ent.getKey().getMaxLevel()) return true;
+            if (ent.getValue() > ent.getKey().getMaxLevel()) return ent;
         }
-        return false;
+        return null;
+    }
+
+    @Override
+    public String getLogMessage(Player player, ItemStack item) {
+        Entry<Enchantment, Integer> invalid = getInvalidEnchantment(player, item);
+        Enchantment enchant = invalid.getKey();
+        return Message.format(player, Message.REASON_OVERENCHANT, "$enchant:" + enchant.getName(), "$level:" + invalid.getValue(), "$max:" + enchant.getMaxLevel());
     }
 }

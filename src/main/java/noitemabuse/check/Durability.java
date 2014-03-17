@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
 import noitemabuse.Executor;
-import noitemabuse.config.Options;
+import noitemabuse.config.*;
 
 public class Durability extends Check {
     DurabilityOptions options = new DurabilityOptions(this);
@@ -18,6 +18,11 @@ public class Durability extends Check {
     @Override
     public boolean check(Player player, ItemStack item) {
         return item.getDurability() < options.min_durability;
+    }
+
+    @Override
+    public String getLogMessage(Player player, ItemStack item) {
+        return Message.format(player, Message.REASON_OVERDURABLE, "$durability:" + item.getDurability());
     }
 
     @Override

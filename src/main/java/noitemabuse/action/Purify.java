@@ -1,6 +1,7 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.action;
 
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.bukkit.enchantments.Enchantment;
@@ -9,8 +10,12 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
+import noitemabuse.Executor;
+import noitemabuse.check.Check;
+import noitemabuse.config.Options;
 
 public class Purify extends Action {
+    private PurifyOptions options = new PurifyOptions(this);
     private static final short NORMAL_DURABILITY = 0;
 
     public Purify(Plugin plugin) {
@@ -18,11 +23,21 @@ public class Purify extends Action {
     }
 
     @Override
-    public void perform(Player player, ItemStack item, Event event, String message) {
+    public boolean defaultEnabled() {
+        return false;
+    }
+
+    @Override
+    public Options getOptions() {
+        return options;
+    }
+
+    @Override
+    public void perform(Player player, ItemStack item, Event event, String message, List<Check> failedChecks) {
         if (item.getDurability() < config.values.getInt("checks.durability.min_durability")) {
             item.setDurability(NORMAL_DURABILITY);
         }
-        if (config.values.purify_all) {
+        if (options.purify_all) {
             // item.getEnchantments().clear(); // ImmutableMap... we meet again.
             // Great documentation, and great clearEnchantments() method provided.
             // The API is inconsistent. Some methods
@@ -43,6 +58,14 @@ public class Purify extends Action {
                     return;
                 }
             }
+        }
+    }
+
+    class PurifyOptions extends Options {
+        public boolean purify_all = true;
+
+        public PurifyOptions(Executor executor) {
+            super(executor);
         }
     }
 }

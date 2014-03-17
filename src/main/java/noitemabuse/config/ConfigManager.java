@@ -15,7 +15,6 @@ public class ConfigManager extends Manager {
     public final Config values;
     private List<String> toggled = new ArrayList<String>();
     private Action[] actionList;
-    private Action[] allActions;
 
     public ConfigManager(Plugin parent) {
         super(parent);
@@ -23,7 +22,7 @@ public class ConfigManager extends Manager {
     }
 
     public String getActionMessage(Player p, String... args) {
-        if (values.multi_alert) {
+        if (values.getBoolean("actions.log.multi_alert")) {
             StringBuilder alert = new StringBuilder();
             for (Action action : actionList) {
                 Message msg = action.getMessage();
@@ -52,7 +51,7 @@ public class ConfigManager extends Manager {
     public void init() {
         CheckManager checkManager = plugin.getManager(CheckManager.class);
         Config cfg = new Config(plugin);
-        actionList = parseActions(values.actions.split(","));
+        actionList = getAllActions();
         for (MessageEnum message : Message.getMessages()) {
             String node = message.getNode(), value = message.getMessage();
             if (cfg.get(node) == null) {
@@ -61,8 +60,9 @@ public class ConfigManager extends Manager {
                 message.setMessage(cfg.getString(node, value));
             }
         }
+        checkManager.checks = getAllChecks();
         for (Check check : checkManager.checks) {
-            check.loadOptions();
+            check.registerEvents();
         }
         for (Action action : actionList) {
             action.loadOptions();
@@ -70,29 +70,27 @@ public class ConfigManager extends Manager {
         cfg.save();
     }
 
-    @Override
-    public boolean loadAfter(Manager manager) {
-        return manager instanceof CheckManager;
-    }
-
     private Action[] getAllActions() {
         List<Action> actions = plugin.getClassFinder().getInstancesOfType(Action.class, new Class[] { Plugin.class }, plugin);
+        for (Iterator<Action> iterator = actions.iterator(); iterator.hasNext();) {
+            Action action = iterator.next();
+            action.loadOptions();
+            if (!action.getOptions().enabled) {
+                iterator.remove();
+            }
+        }
         return actions.toArray(new Action[actions.size()]);
     }
 
-    private Action[] parseActions(String[] actions) {
-        if (allActions == null) {
-            allActions = getAllActions();
-        }
-        List<Action> list = new ArrayList<Action>();
-        for (String str : actions) {
-            str = str.trim().toLowerCase();
-            for (Action action : allActions) {
-                if (action.getName().equals(str)) {
-                    list.add(action);
-                }
+    private Check[] getAllChecks() {
+        List<Check> list = plugin.getClassFinder().getInstancesOfType(Check.class, new Class[] { Plugin.class }, plugin);
+        for (Iterator<Check> iterator = list.iterator(); iterator.hasNext();) {
+            Check check = iterator.next();
+            check.loadOptions();
+            if (!check.getOptions().enabled) {
+                iterator.remove();
             }
         }
-        return list.toArray(new Action[list.size()]);
+        return list.toArray(new Check[list.size()]);
     }
 }

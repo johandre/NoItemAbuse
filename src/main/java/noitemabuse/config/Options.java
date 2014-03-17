@@ -7,7 +7,8 @@ import reflectlib.bukkit.config.Reflecturation;
 import noitemabuse.Executor;
 import noitemabuse.action.Action;
 
-public abstract class Options extends Reflecturation {
+public class Options extends Reflecturation {
+    public boolean enabled = true;
     private Executor executor;
 
     public Options(Executor executor) {
