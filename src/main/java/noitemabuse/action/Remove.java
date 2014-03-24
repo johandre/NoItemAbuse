@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
-import noitemabuse.check.Check;
 import reflectlib.bukkit.Plugin;
+import noitemabuse.check.Check;
 
 public class Remove extends Action {
     public Remove(Plugin plugin) {

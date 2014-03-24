@@ -4,6 +4,7 @@ package noitemabuse;
 import java.io.File;
 import java.util.*;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +25,7 @@ public class CheckManager extends Manager {
     }
 
     public void check(Player player, ItemStack item, Event event, EventMessage eventMessage, String... args) {
-        if (item == null || item.getTypeId() == 0 || player.hasPermission("noitemabuse.allow")) return;
+        if (item == null || item.getType() == Material.AIR || player.hasPermission("noitemabuse.allow")) return;
         List<Check> failedChecks = getFailedChecks(player, item);
         if (!failedChecks.isEmpty()) {
             performActions(player, item, event, Message.format(player, eventMessage, args), failedChecks);

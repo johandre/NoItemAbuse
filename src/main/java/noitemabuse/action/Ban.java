@@ -16,6 +16,7 @@ public class Ban extends Action {
     public Ban(Plugin plugin) {
         super(plugin);
     }
+
     @Override
     public boolean defaultEnabled() {
         return false;

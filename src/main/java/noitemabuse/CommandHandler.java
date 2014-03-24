@@ -21,6 +21,7 @@ public class CommandHandler extends AbstractCommandManager implements Listener {
         this.config = plugin.getManager(ConfigManager.class);
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) return false;
         final String name = sender.getName().toLowerCase(), cmd = args[0];

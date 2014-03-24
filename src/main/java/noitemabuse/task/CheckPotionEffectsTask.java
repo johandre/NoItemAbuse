@@ -25,10 +25,12 @@ public class CheckPotionEffectsTask implements Task {
         this.player = event.getPlayer();
     }
 
+    @Override
     public void run() {
         manager.check(player, item, event, POTION_DRINK);
     }
 
+    @Override
     public void schedule(Plugin plugin) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this, 1);
     }

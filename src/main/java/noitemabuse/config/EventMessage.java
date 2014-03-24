@@ -18,14 +18,17 @@ public enum EventMessage implements MessageEnum {
         setMessage(message);
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public String getNode() {
         return "event_messages." + name().toLowerCase();
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
     }

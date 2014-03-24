@@ -57,14 +57,17 @@ public enum Message implements MessageEnum {
         return all;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public String getNode() {
         return "messages." + name().toLowerCase();
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
     }

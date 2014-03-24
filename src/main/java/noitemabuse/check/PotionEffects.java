@@ -27,16 +27,29 @@ public class PotionEffects extends Check implements Listener {
         return options.remove_invalid_potions && checkPotionAndEffects(player, item) != null;
     }
 
-    @Override
-    public String getLogMessage(Player player, ItemStack item) {
-        Message reason = checkPotionAndEffects(player, item);
-        return Message.format(player, reason, "$type:" + getInvalidType(item), "$level:" + getPotionLevel(item), "$effectlevel:" + getInvalidEffectLevel(item), "$duration:"
-                + getInvalidDuration(item));
+    public void checkActiveEffects(Player player) {
+        // Message invalidActiveEffect = null;
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            Message reason = checkEffect(effect);
+            if (reason != null) {
+                // invalidActiveEffect = reason;
+                player.removePotionEffect(effect.getType());
+            }
+        }
+        // return invalidActiveEffect;
     }
+
+    public Message checkEffect(PotionEffect effect) {
+        final int level = effect.getAmplifier(), duration = effect.getDuration();
+        if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
+        if (duration > config.values.getInt("checks.potioneffects.max_potion_effect_duration_ticks") || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        return null;
+    }
+
     public Message checkPotionAndEffects(Player player, ItemStack item) {
-        //Message invalidActiveEffect = 
+        // Message invalidActiveEffect =
         checkActiveEffects(player);
-        //if (invalidActiveEffect != null) return invalidActiveEffect;
+        // if (invalidActiveEffect != null) return invalidActiveEffect;
         if (item.getType() != Material.POTION) return null;
         Potion pot;
         try {
@@ -53,9 +66,21 @@ public class PotionEffects extends Check implements Listener {
         }
         return checkEffects(pot.getEffects());
     }
+
+    @Override
+    public String getLogMessage(Player player, ItemStack item) {
+        Message reason = checkPotionAndEffects(player, item);
+        return Message
+                .format(player, reason, "$type:" + getInvalidType(item), "$level:" + getPotionLevel(item), "$effectlevel:" + getInvalidEffectLevel(item), "$duration:" + getInvalidDuration(item));
+    }
+
     @Override
     public Options getOptions() {
         return options;
+    }
+
+    public int getPotionLevel(ItemStack i) {
+        return (i.getDurability() & 0x20) >> 5; // damage & TIER_BIT >> TIER_SHIFT;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -63,6 +88,14 @@ public class PotionEffects extends Check implements Listener {
         ItemStack item = event.getItem();
         if (!options.remove_invalid_potions || item.getType() != Material.POTION) return;
         new CheckPotionEffectsTask(manager, item, event).schedule(plugin);
+    }
+
+    private Message checkEffects(Collection<PotionEffect> collection) {
+        for (PotionEffect effect : collection) {
+            Message message = checkEffect(effect);
+            if (message != null) return message;
+        }
+        return null;
     }
 
     private int getInvalidDuration(ItemStack potion) {
@@ -93,35 +126,6 @@ public class PotionEffects extends Check implements Listener {
         return "undefined";
     }
 
-    private Message checkEffects(Collection<PotionEffect> collection) {
-        for (PotionEffect effect : collection) {
-            Message message = checkEffect(effect);
-            if (message != null) return message;
-        }
-        return null;
-    }
-    public int getPotionLevel(ItemStack i) {
-        return (i.getDurability() & 0x20) >> 5; // damage & TIER_BIT >> TIER_SHIFT;
-    }
-    
-    public void checkActiveEffects(Player player) {
-        //Message invalidActiveEffect = null;
-        for (PotionEffect effect : player.getActivePotionEffects()) {
-            Message reason = checkEffect(effect);
-            if (reason != null) {
-                //invalidActiveEffect = reason;
-                player.removePotionEffect(effect.getType());
-            }
-        }
-        //return invalidActiveEffect;
-    }
-
-    public Message checkEffect(PotionEffect effect) {
-        final int level = effect.getAmplifier(), duration = effect.getDuration();
-        if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-        if (duration > config.values.getInt("checks.potioneffects.max_potion_effect_duration_ticks") || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
-        return null;
-    }
     class PotionEffectsOptions extends Options {
         public boolean remove_invalid_potions = true;
         public int max_potion_effect_duration_ticks = 9600;

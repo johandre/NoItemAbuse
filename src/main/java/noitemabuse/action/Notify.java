@@ -26,6 +26,11 @@ public class Notify extends Log {
     }
 
     @Override
+    public Options getOptions() {
+        return options;
+    }
+
+    @Override
     public void perform(Player player, ItemStack item, Event event, String eventMessage, List<Check> failedChecks) {
         String message = getMessage(player, item, event, eventMessage, failedChecks);
         message = Message.ALERT_PREFIX + message;
@@ -41,10 +46,6 @@ public class Notify extends Log {
 
     private boolean shouldNotify(Player player) {
         return config.getToggledPlayers().contains(player.getName().toLowerCase()) != options.default_notify;
-    }
-    @Override
-    public Options getOptions() {
-        return options;
     }
 
     class NotifyOptions extends Options {
