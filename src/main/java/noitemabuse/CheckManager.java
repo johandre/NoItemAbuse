@@ -61,11 +61,6 @@ public class CheckManager extends Manager {
         }
     }
 
-    @Override
-    public boolean loadAfter(Manager manager) {
-        return manager instanceof ConfigManager;
-    }
-
     public void performActions(Player player, ItemStack item, Event event, String message, List<Check> checks) {
         for (Action action : config.getActions()) {
             action.perform(player, item, event, message, checks);
