@@ -13,8 +13,8 @@ public class FileLogger {
     private SimpleDateFormat format = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss] ");
     private Date date = new Date();
     private final PrintWriter writer;
-    private Thread thread = new Thread(new Writer());
-    private Object lock = new Object();
+    private Thread thread = new Thread(new Flusher());
+    private final Object lock = new Object();
 
     public FileLogger(File file) throws IOException {
         file.getParentFile().mkdirs();
@@ -45,7 +45,7 @@ public class FileLogger {
         }
     }
 
-    class Writer implements Runnable {
+    class Flusher implements Runnable {
         @Override
         public void run() {
             try {
