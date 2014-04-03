@@ -30,7 +30,7 @@ public class Confiscate extends Log {
     public void perform(Player player, ItemStack item, Event event, String eventMessage, List<Check> failedChecks) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.hasPermission("noitemabuse.confiscate")) {
-                if (!config.values.getBoolean("actions.log.multi_alert")) {
+                if (!config.values.getBoolean("actions.Log.multi_alert")) {
                     String message = Message.format(player, Message.CONFISCATE, "$item:" + manager.getItemName(item), "$reason:" + getReasons(player, item, failedChecks), "$event:" + eventMessage);
                     message = Message.ALERT_PREFIX + message;
                     p.sendMessage(message);

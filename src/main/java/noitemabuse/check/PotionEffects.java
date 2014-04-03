@@ -42,7 +42,7 @@ public class PotionEffects extends Check implements Listener {
     public Message checkEffect(PotionEffect effect) {
         final int level = effect.getAmplifier(), duration = effect.getDuration();
         if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-        if (duration > config.values.getInt("checks.potioneffects.max_potion_effect_duration_ticks") || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        if (duration > options.max_potion_effect_duration_ticks || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
         return null;
     }
 
