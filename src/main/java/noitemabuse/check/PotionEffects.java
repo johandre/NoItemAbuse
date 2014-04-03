@@ -126,7 +126,7 @@ public class PotionEffects extends Check implements Listener {
         return "undefined";
     }
 
-    class PotionEffectsOptions extends Options {
+    public class PotionEffectsOptions extends Options {
         public boolean remove_invalid_potions = true;
         public int max_potion_effect_duration_ticks = 9600;
 

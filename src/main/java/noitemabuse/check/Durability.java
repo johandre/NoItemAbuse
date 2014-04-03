@@ -30,7 +30,7 @@ public class Durability extends Check {
         return options;
     }
 
-    class DurabilityOptions extends Options {
+    public class DurabilityOptions extends Options {
         public int min_durability = 0;
 
         public DurabilityOptions(Executor executor) {

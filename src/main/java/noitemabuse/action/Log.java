@@ -59,7 +59,7 @@ public class Log extends Action {
         }
     }
 
-    class LogOptions extends Options {
+    public class LogOptions extends Options {
         public boolean multi_alert = false;
         public boolean log_all_players = true;
 

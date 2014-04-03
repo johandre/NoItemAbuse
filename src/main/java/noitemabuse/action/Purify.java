@@ -61,7 +61,7 @@ public class Purify extends Action {
         }
     }
 
-    class PurifyOptions extends Options {
+    public class PurifyOptions extends Options {
         public boolean purify_all = true;
 
         public PurifyOptions(Executor executor) {

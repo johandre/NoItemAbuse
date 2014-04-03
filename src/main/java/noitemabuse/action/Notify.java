@@ -48,7 +48,7 @@ public class Notify extends Log {
         return config.getToggledPlayers().contains(player.getName().toLowerCase()) != options.default_notify;
     }
 
-    class NotifyOptions extends Options {
+    public class NotifyOptions extends Options {
         public boolean default_notify = true;
         public boolean notify_console = true;
 

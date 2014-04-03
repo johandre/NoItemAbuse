@@ -18,6 +18,6 @@ public class Options extends Reflecturation {
 
     @Override
     protected String getKeyName(Field field) {
-        return (executor instanceof Action ? "actions" : "checks") + "." + getName() + "." + super.getKeyName(field);
+        return (executor instanceof Action ? "actions" : "checks") + "." + getClass().getSimpleName() + "." + super.getKeyName(field);
     }
 }
