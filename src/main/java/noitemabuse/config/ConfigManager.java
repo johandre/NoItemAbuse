@@ -46,10 +46,6 @@ public class ConfigManager extends Manager {
     public List<String> getToggledPlayers() {
         return toggled;
     }
-    @Override
-    public boolean loadAfter(Manager manager) {
-        return manager instanceof CheckManager;
-    }
 
     @Override
     public void init() {
