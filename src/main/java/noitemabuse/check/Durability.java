@@ -13,7 +13,7 @@ public class Durability extends Check {
 
     public Durability(Plugin plugin) {
         super(plugin);
-    };
+    }
 
     @Override
     public boolean check(Player player, ItemStack item) {

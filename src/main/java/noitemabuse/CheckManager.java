@@ -40,7 +40,7 @@ public class CheckManager extends Manager {
     public List<Check> getFailedChecks(Player player, ItemStack item) {
         List<Check> failed = new ArrayList<Check>(checks.length);
         for (Check check : checks) {
-            if (!player.hasPermission(check.getPermission()) && check.check(player, item)) {
+            if (!check.hasPermissions(player, item) && check.check(player, item)) {
                 failed.add(check);
             }
         }
@@ -70,5 +70,16 @@ public class CheckManager extends Manager {
         for (Action action : config.getActions()) {
             action.perform(player, item, event, message, checks);
         }
+    }
+
+    public void removeItem(Player player, ItemStack item) {
+        player.getInventory().remove(item);
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        for (int i = 0; i < armor.length; i++) {
+            if (item.equals(armor[i])) {
+                armor[i] = null;
+            }
+        }
+        player.getInventory().setArmorContents(armor);
     }
 }

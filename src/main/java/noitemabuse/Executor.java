@@ -36,11 +36,11 @@ public abstract class Executor {
     }
 
     public void loadOptions() {
-        options = new Options(this);
-        if (options != null) {
-            options.enabled = defaultEnabled();
-            options.init();
+        if (options == null) {
+            options = new Options(this);
         }
+        options.enabled = defaultEnabled();
+        options.init();
     }
 
     public void registerEvents() {

@@ -8,7 +8,7 @@ import noitemabuse.Executor;
 import noitemabuse.action.Action;
 
 public class Options extends Reflecturation {
-    public boolean enabled = true;
+    public boolean enabled;
     private Executor executor;
 
     public Options(Executor executor) {

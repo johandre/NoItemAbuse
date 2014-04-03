@@ -22,7 +22,7 @@ public class Enchantments extends Check {
 
     public Entry<Enchantment, Integer> getInvalidEnchantment(Player player, ItemStack item) {
         for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
-            if (ent.getValue() > ent.getKey().getMaxLevel()) return ent;
+            if (ent.getValue() > ent.getKey().getMaxLevel() && !hasEnchantPermissions(player, item, ent)) return ent;
         }
         return null;
     }
@@ -32,5 +32,11 @@ public class Enchantments extends Check {
         Entry<Enchantment, Integer> invalid = getInvalidEnchantment(player, item);
         Enchantment enchant = invalid.getKey();
         return Message.format(player, Message.REASON_OVERENCHANT, "$enchant:" + enchant.getName(), "$level:" + invalid.getValue(), "$max:" + enchant.getMaxLevel());
+    }
+
+    public boolean hasEnchantPermissions(Player player, ItemStack item, Entry<Enchantment, Integer> ent) {
+        String itemName = item.getType().toString();
+        String name = ent.getKey().getName();
+        return player.hasPermission(getPermission() + "." + itemName + "." + name) || player.hasPermission(getPermission() + "." + name);
     }
 }

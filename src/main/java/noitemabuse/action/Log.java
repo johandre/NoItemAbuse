@@ -40,7 +40,7 @@ public class Log extends Action {
         log(player, getMessage(player, item, event, message, failedChecks));
     }
 
-    private String getReasons(Player player, ItemStack item, List<Check> checks) {
+    protected String getReasons(Player player, ItemStack item, List<Check> checks) {
         String[] reasons = new String[checks.size()];
         for (int i = 0; i < reasons.length; i++) {
             reasons[i] = checks.get(i).getLogMessage(player, item);
