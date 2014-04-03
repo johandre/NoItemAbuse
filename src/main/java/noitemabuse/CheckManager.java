@@ -40,7 +40,7 @@ public class CheckManager extends Manager {
     public List<Check> getFailedChecks(Player player, ItemStack item) {
         List<Check> failed = new ArrayList<Check>(checks.length);
         for (Check check : checks) {
-            if (check.check(player, item)) {
+            if (!player.hasPermission(check.getPermission()) && check.check(player, item)) {
                 failed.add(check);
             }
         }

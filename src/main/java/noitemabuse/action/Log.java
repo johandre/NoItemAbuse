@@ -50,7 +50,7 @@ public class Log extends Action {
             reasonbuilder.append(r).append(", ");
         }
         String reason = reasonbuilder.toString();
-        return reason;
+        return reason.substring(0, reason.length() - 2);
     }
 
     private void log(Player p, String message) {

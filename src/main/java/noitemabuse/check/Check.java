@@ -15,4 +15,8 @@ public abstract class Check extends Executor {
     public abstract boolean check(Player player, ItemStack item);
 
     public abstract String getLogMessage(Player player, ItemStack item);
+
+    public String getPermission() {
+        return "noitemabuse.checks." + getClass().getSimpleName().toLowerCase();
+    }
 }
