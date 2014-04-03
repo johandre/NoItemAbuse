@@ -16,8 +16,12 @@ public class Options extends Reflecturation {
         this.executor = executor;
     }
 
+    public String getExecutorName() {
+        return executor.getClass().getSimpleName();
+    }
+
     @Override
     protected String getKeyName(Field field) {
-        return (executor instanceof Action ? "actions" : "checks") + "." + getClass().getSimpleName() + "." + super.getKeyName(field);
+        return (executor instanceof Action ? "actions" : "checks") + "." + getExecutorName() + "." + super.getKeyName(field);
     }
 }
