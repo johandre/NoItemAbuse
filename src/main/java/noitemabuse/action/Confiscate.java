@@ -21,6 +21,7 @@ public class Confiscate extends Log {
     public boolean defaultEnabled() {
         return false;
     }
+
     @Override
     public Options getOptions() {
         return new Options(this);

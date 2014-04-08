@@ -22,7 +22,7 @@ public class ConfigManager extends Manager {
     }
 
     public String getActionMessage(Player p, String... args) {
-        if (values.getBoolean("actions.log.multi_alert")) {
+        if (values.getBoolean("actions.Log.multi_alert")) {
             StringBuilder alert = new StringBuilder();
             for (Action action : actionList) {
                 Message msg = action.getMessage();
