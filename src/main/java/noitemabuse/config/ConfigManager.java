@@ -7,14 +7,14 @@ import org.bukkit.entity.Player;
 
 import reflectlib.bukkit.Plugin;
 import reflectlib.manager.Manager;
-import noitemabuse.CheckManager;
 import noitemabuse.action.Action;
 import noitemabuse.check.Check;
+import noitemabuse.manager.CheckManager;
 
 public class ConfigManager extends Manager {
     public final Config values;
     private List<String> toggled = new ArrayList<String>();
-    private Action[] actionList;
+    private Action[] actions;
 
     public ConfigManager(Plugin parent) {
         super(parent);
@@ -24,9 +24,9 @@ public class ConfigManager extends Manager {
     public String getActionMessage(Player p, String... args) {
         if (values.getBoolean("actions.Log.multi_alert")) {
             StringBuilder alert = new StringBuilder();
-            for (Action action : actionList) {
+            for (Action action : actions) {
                 Message msg = action.getMessage();
-                if (actionList.length > 1 && (msg == Message.LOG || msg == Message.CANCEL)) {
+                if (actions.length > 1 && (msg == Message.LOG || msg == Message.CANCEL)) {
                     continue; // prevent multi-alert from being *too* spammy
                 }
                 alert.append(Message.format(p, msg, args)).append("\n");
@@ -34,13 +34,13 @@ public class ConfigManager extends Manager {
             String str = alert.toString();
             return str.substring(0, str.length() - 1);
         } else {
-            Message msg = actionList[0].getMessage();
+            Message msg = actions[0].getMessage();
             return Message.format(p, msg, args);
         }
     }
 
     public Action[] getActions() {
-        return actionList;
+        return actions;
     }
 
     public List<String> getToggledPlayers() {
@@ -51,7 +51,7 @@ public class ConfigManager extends Manager {
     public void init() {
         CheckManager checkManager = plugin.getManager(CheckManager.class);
         Config cfg = new Config(plugin);
-        actionList = getAllActions();
+        actions = getAllActions();
         for (MessageEnum message : Message.getMessages()) {
             String node = message.getNode(), value = message.getMessage();
             if (cfg.get(node) == null) {
@@ -64,7 +64,7 @@ public class ConfigManager extends Manager {
         for (Check check : checkManager.checks) {
             check.registerEvents();
         }
-        for (Action action : actionList) {
+        for (Action action : actions) {
             action.loadOptions();
         }
         cfg.save();

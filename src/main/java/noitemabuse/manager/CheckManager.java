@@ -1,5 +1,5 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
-package noitemabuse;
+package noitemabuse.manager;
 
 import java.io.File;
 import java.util.*;
@@ -14,6 +14,7 @@ import reflectlib.manager.Manager;
 import noitemabuse.action.Action;
 import noitemabuse.check.Check;
 import noitemabuse.config.*;
+import noitemabuse.util.FileLogger;
 
 public class CheckManager extends Manager {
     public FileLogger log;
@@ -68,13 +69,10 @@ public class CheckManager extends Manager {
     }
 
     public void removeItem(Player player, ItemStack item) {
-        player.getInventory().remove(item);
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < armor.length; i++) {
-            if (item.equals(armor[i])) {
-                armor[i] = null;
-            }
-        }
-        player.getInventory().setArmorContents(armor);
+        item.setType(Material.AIR);
+        /*
+         * player.getInventory().remove(item); ItemStack[] armor = player.getInventory().getArmorContents(); for (int i = 0; i < armor.length; i++) { if (item.equals(armor[i])) { armor[i] = null; } }
+         * player.getInventory().setArmorContents(armor);
+         */
     }
 }

@@ -1,10 +1,11 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
-package noitemabuse;
+package noitemabuse.util;
 
 import org.bukkit.event.Listener;
 
 import reflectlib.bukkit.Plugin;
 import noitemabuse.config.*;
+import noitemabuse.manager.CheckManager;
 
 public abstract class Executor {
     protected Plugin plugin;

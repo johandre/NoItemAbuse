@@ -9,9 +9,9 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.Executor;
 import noitemabuse.check.Check;
 import noitemabuse.config.*;
+import noitemabuse.util.Executor;
 
 public class Notify extends Log {
     private NotifyOptions options = new NotifyOptions(this);

@@ -2,11 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>noitemabuse</groupId>
     <artifactId>NoItemAbuse</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
     <name>NoItemAbuse</name>
     <url>http://github.com/ruany/NoItemAbuse</url>
     
     <properties>
+        <reflectlib.version>1.3.1</reflectlib.version>
+        <reflectlib.package>1_3_1</reflectlib.package>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
@@ -57,6 +59,14 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>reflectlib</pattern>
+                                    <shadedPattern>reflectlib.v${reflectlib.package}</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -71,6 +81,7 @@
         <repository>
             <id>bukkit</id>
             <url>http://repo.bukkit.org/content/repositories/releases/</url>
+        </repository>
     </repositories>
     
     <dependencies>
@@ -84,7 +95,7 @@
         <dependency>
             <groupId>reflectlib</groupId>
             <artifactId>reflectlib</artifactId>
-            <version>1.3</version>
+            <version>${reflectlib.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

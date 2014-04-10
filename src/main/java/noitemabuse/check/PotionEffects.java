@@ -11,9 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.Executor;
 import noitemabuse.config.*;
 import noitemabuse.task.CheckPotionEffectsTask;
+import noitemabuse.util.Executor;
 
 public class PotionEffects extends Check implements Listener {
     private PotionEffectsOptions options = new PotionEffectsOptions(this);

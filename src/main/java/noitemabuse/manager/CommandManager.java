@@ -1,5 +1,5 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
-package noitemabuse;
+package noitemabuse.manager;
 
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -9,10 +9,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import reflectlib.bukkit.*;
 import noitemabuse.config.*;
 
-public class CommandHandler extends AbstractCommandManager implements Listener {
+public class CommandManager extends AbstractCommandManager implements Listener {
     private ConfigManager config;
 
-    public CommandHandler(Plugin parent) {
+    public CommandManager(Plugin parent) {
         super(parent);
     }
 

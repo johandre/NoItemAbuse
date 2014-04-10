@@ -1,5 +1,5 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
-package noitemabuse;
+package noitemabuse.util;
 
 import java.io.*;
 import java.text.SimpleDateFormat;

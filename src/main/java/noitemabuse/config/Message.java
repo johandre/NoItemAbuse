@@ -21,6 +21,7 @@ public enum Message implements MessageEnum {
     REASON_OVERDURABLE("durability $durability < 0"),
     REASON_OVERENCHANT("$enchant enchantment level $level > $max"),
     REASON_OVERENCHANT_COUNT("$enchantments enchantments > $max"),
+    REASON_ATTRIBUTES("$attribute attribute level $level > $max"),
     REASON_POTION_INVALID_LEVEL("invalid potion level $level"),
     REASON_POTION_INVALID_EFFECT_LEVEL("invalid potion effect $type: $effectlevel > 2"),
     REASON_POTION_INVALID_EFFECT_DURATION("invalid potion effect $type: $duration > 9600"),

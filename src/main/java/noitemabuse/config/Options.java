@@ -4,8 +4,8 @@ package noitemabuse.config;
 import java.lang.reflect.Field;
 
 import reflectlib.bukkit.config.Reflecturation;
-import noitemabuse.Executor;
 import noitemabuse.action.Action;
+import noitemabuse.util.Executor;
 
 public class Options extends Reflecturation {
     public boolean enabled;

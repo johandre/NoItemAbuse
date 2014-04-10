@@ -10,9 +10,9 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.Executor;
 import noitemabuse.check.Check;
 import noitemabuse.config.Options;
+import noitemabuse.util.Executor;
 
 public class Purify extends Action {
     private PurifyOptions options = new PurifyOptions(this);
@@ -37,6 +37,7 @@ public class Purify extends Action {
         if (item.getDurability() < config.values.getInt("checks.Durability.min_durability")) {
             item.setDurability(NORMAL_DURABILITY);
         }
+        // AttributeList attributes = new AttributeList(item);
         if (options.purify_all) {
             // item.getEnchantments().clear(); // ImmutableMap... we meet again.
             // Great documentation, and great clearEnchantments() method provided.
@@ -49,6 +50,7 @@ public class Purify extends Action {
             for (Enchantment enchant : item.getEnchantments().keySet()) {
                 item.removeEnchantment(enchant);
             }
+            // attributes.clear();
         } else {
             for (Entry<Enchantment, Integer> ent : item.getEnchantments().entrySet()) {
                 Enchantment enchant = ent.getKey();
@@ -58,11 +60,15 @@ public class Purify extends Action {
                     return;
                 }
             }
+            /*
+             * for (Attribute attribute : attributes) { if (attribute.getAmount() > config.values.getInt("checks.Attributes.max_attribute_value")) { attributes.remove(attribute); } }
+             */
         }
     }
 
     public class PurifyOptions extends Options {
         public boolean purify_all = true;
+        public int attribute_reset = 0;
 
         public PurifyOptions(Executor executor) {
             super(executor);

@@ -8,9 +8,9 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.Executor;
 import noitemabuse.check.Check;
 import noitemabuse.config.*;
+import noitemabuse.util.Executor;
 
 public class Log extends Action {
     private LogOptions options = new LogOptions(this);

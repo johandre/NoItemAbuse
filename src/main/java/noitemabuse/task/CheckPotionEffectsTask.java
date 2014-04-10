@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.CheckManager;
+import noitemabuse.manager.CheckManager;
 
 public class CheckPotionEffectsTask implements Task {
     private CheckManager manager;

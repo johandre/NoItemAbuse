@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.Executor;
 import noitemabuse.config.*;
+import noitemabuse.util.Executor;
 
 public class Durability extends Check {
     DurabilityOptions options = new DurabilityOptions(this);

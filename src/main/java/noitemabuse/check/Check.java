@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
-import noitemabuse.Executor;
+import noitemabuse.util.Executor;
 
 public abstract class Check extends Executor {
     public Check(Plugin plugin) {
