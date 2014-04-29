@@ -5,7 +5,7 @@ import static noitemabuse.config.EventMessage.*;
 
 import org.bukkit.*;
 import org.bukkit.block.*;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
@@ -92,15 +92,7 @@ public class EventManager extends Manager implements Listener {
         Player p = event.getPlayer();
         manager.check(p, i, event, ITEM_DROP, "$location:" + locationToString(p.getLocation()));
     }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPotionThrow(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        ItemStack i = p.getItemInHand();
-        if (i.getType() == Material.POTION) {
-            manager.check(p, i, e, POTION_THROW);
-        }
-    }
+    
 
     private String locationToString(Location loc) {
         return "[" + loc.getWorld().getName() + "] " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();

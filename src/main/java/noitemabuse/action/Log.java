@@ -13,7 +13,7 @@ import noitemabuse.config.*;
 import noitemabuse.util.Executor;
 
 public class Log extends Action {
-    private LogOptions options = new LogOptions(this);
+    public LogOptions options = new LogOptions(this);
 
     public Log(Plugin plugin) {
         super(plugin);
@@ -33,6 +33,14 @@ public class Log extends Action {
     @Override
     public Options getOptions() {
         return options;
+    }
+    
+    public Message getMessage() {
+        try {
+            return Message.valueOf(options.log_message.toUpperCase());
+        } catch(Throwable ex) {
+            return super.getMessage();
+        }
     }
 
     @Override
@@ -60,8 +68,10 @@ public class Log extends Action {
     }
 
     public class LogOptions extends Options {
+        public boolean execute_first = true;
         public boolean multi_alert = false;
         public boolean log_all_players = true;
+        public String log_message = "remove";
 
         public LogOptions(Executor executor) {
             super(executor);

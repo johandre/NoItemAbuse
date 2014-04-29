@@ -62,9 +62,12 @@ public class CheckManager extends Manager {
         }
     }
 
-    public void performActions(Player player, ItemStack item, Event event, String message, List<Check> checks) {
+    public void performActions(Player player, ItemStack item, Event event, String message, List<Check> failedChecks) {
+        if(config.logAction != null) {
+            config.logAction.perform(player, item, event, message, failedChecks);
+        }
         for (Action action : config.getActions()) {
-            action.perform(player, item, event, message, checks);
+            action.perform(player, item, event, message, failedChecks);
         }
     }
 

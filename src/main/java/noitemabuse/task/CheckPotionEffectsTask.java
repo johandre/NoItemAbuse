@@ -5,7 +5,7 @@ import static noitemabuse.config.EventMessage.POTION_DRINK;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,10 +19,14 @@ public class CheckPotionEffectsTask implements Task {
     private Player player;
 
     public CheckPotionEffectsTask(CheckManager manager, ItemStack item, PlayerEvent event) {
+        this(manager, item, event.getPlayer(), event);
+    }
+    
+    public CheckPotionEffectsTask(CheckManager manager, ItemStack item, Player player, Event event) {
         this.manager = manager;
         this.event = event;
         this.item = item;
-        this.player = event.getPlayer();
+        this.player = player;
     }
 
     @Override

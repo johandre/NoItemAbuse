@@ -1,3 +1,4 @@
+/* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.util;
 
 import java.util.*;
@@ -16,12 +17,24 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
     // This may be modified
     public ItemStack stack;
     private NBTList attributes;
+    private static final Iterator<Attribute> emptyIterator = new Iterator<Attribute>() {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Attribute next() {
+            return null;
+        }
+
+        @Override
+        public void remove() {}
+    };
 
     public AttributeList(ItemStack stack) {
         this.stack = NBTFactory.getCraftItemStack(stack);
-        // Load NBT
-        NBTCompound nbt = NBTFactory.fromItemTag(this.stack);
-        this.attributes = nbt.getList("AttributeModifiers", true);
+        loadAttributes(false);
     }
 
     /**
@@ -30,11 +43,12 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
      */
     public void add(Attribute attribute) {
         Preconditions.checkNotNull(attribute.getName(), "must specify an attribute name.");
+        loadAttributes(true);
         attributes.add(attribute.data);
     }
 
     public void clear() {
-        attributes.clear();
+        removeAttributes();
     }
 
     /**
@@ -56,6 +70,7 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
 
     @Override
     public Iterator<Attribute> iterator() {
+        if (size() == 0) return emptyIterator;
         return Iterators.transform(attributes.iterator(), new Function<Object, Attribute>() {
             @Override
             public Attribute apply(@Nullable Object element) {
@@ -76,6 +91,9 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
         for (Iterator<Attribute> it = iterator(); it.hasNext();) {
             if (it.next().getUUID().equals(uuid)) {
                 it.remove();
+                if (size() == 0) {
+                    removeAttributes();
+                }
                 return true;
             }
         }
@@ -88,6 +106,19 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
      */
     public int size() {
         return attributes.size();
+    }
+
+    private void loadAttributes(boolean createIfMissing) {
+        if (this.attributes == null) {
+            NBTCompound nbt = NBTFactory.fromItemTag(this.stack);
+            this.attributes = nbt.getList("AttributeModifiers", createIfMissing);
+        }
+    }
+
+    private void removeAttributes() {
+        NBTCompound nbt = NBTFactory.fromItemTag(this.stack);
+        nbt.remove("AttributeModifiers");
+        this.attributes = null;
     }
 
     public static class Attribute {

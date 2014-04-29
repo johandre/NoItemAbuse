@@ -1,3 +1,4 @@
+/* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.check;
 
 import org.bukkit.entity.Player;
@@ -14,19 +15,12 @@ public class Attributes extends Check {
     public Attributes(Plugin plugin) {
         super(plugin);
     }
-    @Override
-    public boolean defaultEnabled() {
-        return false; // BROKEN CHECK TODO
-    }
-
+    
     @Override
     public boolean check(Player player, ItemStack item) {
-        AttributeList list = new AttributeList(item); // AttributeList destroys all attributes on the item when constructed
-        // Need to fix this before this check can be used
-        // Bug persists in original unrefactored implementation
-        System.out.println(list.size()); // XXX
+        AttributeList list = new AttributeList(item);
         for (Attribute attribute : list) {
-            //System.out.println(attribute.getType() + " = " + attribute.getAmount()); // XXX
+            System.out.println(attribute.getType() + " = " + attribute.getAmount()); // XXX
             if (attribute.getAmount() > options.max_attribute_value) return true;
         }
         return false;

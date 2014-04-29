@@ -1,12 +1,15 @@
 /* This file is part of NoItemAbuse (GPL v2 or later), see LICENSE.md */
 package noitemabuse.check;
 
+import static noitemabuse.config.EventMessage.POTION_THROW;
+
 import java.util.Collection;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.*;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.*;
 
@@ -83,11 +86,29 @@ public class PotionEffects extends Check implements Listener {
         return (i.getDurability() & 0x20) >> 5; // damage & TIER_BIT >> TIER_SHIFT;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPotionDrink(PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
         if (!options.remove_invalid_potions || item.getType() != Material.POTION) return;
         new CheckPotionEffectsTask(manager, item, event).schedule(plugin);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent e) {
+        for (Entity entity : e.getAffectedEntities()) {
+            if (entity instanceof Player) {
+                new CheckPotionEffectsTask(manager, null, (Player) entity, e).schedule(plugin);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPotionThrow(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        ItemStack i = p.getItemInHand();
+        if (i.getType() == Material.POTION) {
+            manager.check(p, i, e, POTION_THROW);
+        }
     }
 
     private Message checkEffects(Collection<PotionEffect> collection) {

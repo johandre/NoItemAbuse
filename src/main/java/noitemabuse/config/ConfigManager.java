@@ -7,14 +7,15 @@ import org.bukkit.entity.Player;
 
 import reflectlib.bukkit.Plugin;
 import reflectlib.manager.Manager;
-import noitemabuse.action.Action;
+import noitemabuse.action.*;
 import noitemabuse.check.Check;
-import noitemabuse.manager.CheckManager;
+import noitemabuse.manager.*;
 
 public class ConfigManager extends Manager {
     public final Config values;
     private List<String> toggled = new ArrayList<String>();
     private Action[] actions;
+    public Log logAction = null;
 
     public ConfigManager(Plugin parent) {
         super(parent);
@@ -77,6 +78,14 @@ public class ConfigManager extends Manager {
             action.loadOptions();
             if (!action.getOptions().enabled) {
                 iterator.remove();
+                continue;
+            }
+            if(action instanceof Log) {
+                Log log = (Log) action;
+                if(log.options.execute_first) {
+                    iterator.remove();
+                    this.logAction = log;
+                }
             }
         }
         return actions.toArray(new Action[actions.size()]);
