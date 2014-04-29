@@ -20,7 +20,6 @@ public class Attributes extends Check {
     public boolean check(Player player, ItemStack item) {
         AttributeList list = new AttributeList(item);
         for (Attribute attribute : list) {
-            System.out.println(attribute.getType() + " = " + attribute.getAmount()); // XXX
             if (attribute.getAmount() > options.max_attribute_value) return true;
         }
         return false;

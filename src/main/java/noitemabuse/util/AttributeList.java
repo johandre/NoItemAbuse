@@ -105,6 +105,7 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
      * @return Number of attributes.
      */
     public int size() {
+        if (attributes == null) return 0;
         return attributes.size();
     }
 
