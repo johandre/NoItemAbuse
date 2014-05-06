@@ -47,7 +47,7 @@ public class ItemBlacklist extends Check {
     }
 
     public class BlacklistOptions extends Options {
-        public String[] blacklist = { "sponge", "bedrock" };
+        public String[] blacklist = { "sponge", "bedrock", "skull_item" };
 
         public BlacklistOptions(Executor executor) {
             super(executor);
