@@ -64,6 +64,7 @@ public class ConfigManager extends Manager {
         checkManager.checks = getAllChecks();
         for (Check check : checkManager.checks) {
             check.registerEvents();
+            check.loadOptions();
         }
         for (Action action : actions) {
             action.loadOptions();
