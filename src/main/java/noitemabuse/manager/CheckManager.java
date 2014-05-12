@@ -64,7 +64,7 @@ public class CheckManager extends Manager {
     }
 
     public void performActions(Player player, ItemStack item, Event event, String message, List<Check> failedChecks) {
-        if(config.logAction != null) {
+        if (config.logAction != null) {
             config.logAction.perform(player, item, event, message, failedChecks);
         }
         for (Action action : actions) {
@@ -73,10 +73,14 @@ public class CheckManager extends Manager {
     }
 
     public void removeItem(Player player, ItemStack item) {
-        item.setType(Material.AIR);
-        /*
-         * player.getInventory().remove(item); ItemStack[] armor = player.getInventory().getArmorContents(); for (int i = 0; i < armor.length; i++) { if (item.equals(armor[i])) { armor[i] = null; } }
-         * player.getInventory().setArmorContents(armor);
-         */
+        // item.setType(Material.AIR); // does not work.
+        player.getInventory().remove(item);
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        for (int i = 0; i < armor.length; i++) {
+            if (item.equals(armor[i])) {
+                armor[i] = null;
+            }
+        }
+        player.getInventory().setArmorContents(armor);
     }
 }
