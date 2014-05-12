@@ -14,7 +14,6 @@ import noitemabuse.manager.*;
 public class ConfigManager extends Manager {
     public final Config values;
     private List<String> toggled = new ArrayList<String>();
-    private Action[] actions;
     public Log logAction = null;
 
     public ConfigManager(Plugin parent) {
@@ -23,6 +22,8 @@ public class ConfigManager extends Manager {
     }
 
     public String getActionMessage(Player p, String... args) {
+        CheckManager checkManager = plugin.getManager(CheckManager.class);
+        Action[] actions = checkManager.actions;
         if (values.getBoolean("actions.Log.multi_alert")) {
             StringBuilder alert = new StringBuilder();
             for (Action action : actions) {
@@ -39,11 +40,7 @@ public class ConfigManager extends Manager {
             return Message.format(p, msg, args);
         }
     }
-
-    public Action[] getActions() {
-        return actions;
-    }
-
+    
     public List<String> getToggledPlayers() {
         return toggled;
     }
@@ -52,7 +49,6 @@ public class ConfigManager extends Manager {
     public void init() {
         CheckManager checkManager = plugin.getManager(CheckManager.class);
         Config cfg = new Config(plugin);
-        actions = getAllActions();
         for (MessageEnum message : Message.getMessages()) {
             String node = message.getNode(), value = message.getMessage();
             if (cfg.get(node) == null) {
@@ -61,15 +57,9 @@ public class ConfigManager extends Manager {
                 message.setMessage(cfg.getString(node, value));
             }
         }
-        checkManager.checks = getAllChecks();
-        for (Check check : checkManager.checks) {
-            check.registerEvents();
-            check.loadOptions();
-        }
-        for (Action action : actions) {
-            action.loadOptions();
-        }
         cfg.save();
+        checkManager.actions = getAllActions();
+        checkManager.checks = getAllChecks();
     }
 
     private Action[] getAllActions() {
@@ -99,6 +89,8 @@ public class ConfigManager extends Manager {
             check.loadOptions();
             if (!check.getOptions().enabled) {
                 iterator.remove();
+            } else {
+                check.registerEvents();
             }
         }
         return list.toArray(new Check[list.size()]);

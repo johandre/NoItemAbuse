@@ -169,7 +169,7 @@ public class AttributeList implements Iterable<AttributeList.Attribute> {
         }
 
         public void setUUID(@Nonnull UUID id) {
-            Preconditions.checkNotNull("id", "id cannot be null.");
+            Preconditions.checkNotNull(id, "id cannot be null.");
             data.put("UUIDLeast", id.getLeastSignificantBits());
             data.put("UUIDMost", id.getMostSignificantBits());
         }

@@ -8,10 +8,10 @@ import noitemabuse.config.*;
 import noitemabuse.manager.CheckManager;
 
 public abstract class Executor {
-    protected Plugin plugin;
+    public final Plugin plugin;
     protected CheckManager manager;
     protected ConfigManager config;
-    protected Options options;
+    private Options options;
 
     public Executor(Plugin plugin) {
         this.plugin = plugin;

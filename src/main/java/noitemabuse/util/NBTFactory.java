@@ -15,15 +15,15 @@ import com.google.common.primitives.Primitives;
 public class NBTFactory {
     private static final BiMap<Integer, Class<?>> classes = HashBiMap.create();
     private static final BiMap<Integer, NBTType> types = HashBiMap.create();
-    private Class<?> baseClass;
-    private Class<?> compoundClass;
-    private Method nbtCreateTag;
-    private Method nbtGetType;
-    private Field nbtListType;
-    private final Field[] dataField = new Field[12];
-    private Class<?> craftItemStack;
-    private Field craftHandle;
-    private Field stackTag;
+    private static Class<?> baseClass;
+    private static Class<?> compoundClass;
+    static Method nbtCreateTag;
+    static Method nbtGetType;
+    static Field nbtListType;
+    private static final Field[] dataField = new Field[12];
+    static Class<?> craftItemStack;
+    static Field craftHandle;
+    static Field stackTag;
     private static NBTFactory instance;
     /**
      * Construct an instance of the NBT factory by deducing the class of NBTBase.
@@ -102,7 +102,6 @@ public class NBTFactory {
         Object tag = getFieldValue(get().stackTag, nms);
         // Create the tag if it doesn't exist
         if (tag == null) {
-            System.out.println("Created new NBT tag for ItemStack...");
             NBTCompound compound = createCompound();
             setItemTag(stack, compound);
             return compound;
@@ -126,7 +125,6 @@ public class NBTFactory {
     public static ItemStack getCraftItemStack(ItemStack stack) {
         if (stack == null || get().craftItemStack.isAssignableFrom(stack.getClass())) return stack;
         try {
-            System.out.println("Converting ItemStack to CraftItemStack (newInstance)...");
             Constructor<?> caller = instance.craftItemStack.getDeclaredConstructor(ItemStack.class);
             caller.setAccessible(true);
             return (ItemStack) caller.newInstance(stack);

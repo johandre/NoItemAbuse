@@ -18,6 +18,7 @@ import noitemabuse.util.FileLogger;
 
 public class CheckManager extends Manager {
     public FileLogger log;
+    public Action[] actions;
     public Check[] checks;
     ConfigManager config;
 
@@ -66,7 +67,7 @@ public class CheckManager extends Manager {
         if(config.logAction != null) {
             config.logAction.perform(player, item, event, message, failedChecks);
         }
-        for (Action action : config.getActions()) {
+        for (Action action : actions) {
             action.perform(player, item, event, message, failedChecks);
         }
     }
