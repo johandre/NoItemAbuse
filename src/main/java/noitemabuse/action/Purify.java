@@ -63,7 +63,11 @@ public class Purify extends Action {
             }
             for (Attribute attribute : attributes) {
                 if (attribute.getAmount() > config.values.getInt("checks.Attributes.max_attribute_value")) {
-                    attributes.remove(attribute);
+                    if (options.attribute_reset == 0) {
+                        attributes.remove(attribute);
+                    } else {
+                        attribute.setAmount(options.attribute_reset);
+                    }
                 }
             }
         }
