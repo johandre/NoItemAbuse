@@ -3,14 +3,14 @@ package noitemabuse.manager;
 
 import static noitemabuse.config.EventMessage.*;
 
-import org.bukkit.*;
+import org.bukkit.Location;
 import org.bukkit.block.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
@@ -92,7 +92,6 @@ public class EventManager extends Manager implements Listener {
         Player p = event.getPlayer();
         manager.check(p, i, event, ITEM_DROP, "$location:" + locationToString(p.getLocation()));
     }
-    
 
     private String locationToString(Location loc) {
         return "[" + loc.getWorld().getName() + "] " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();

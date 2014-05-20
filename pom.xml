@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>noitemabuse</groupId>
     <artifactId>NoItemAbuse</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.4</version>
     <name>NoItemAbuse</name>
     <url>http://github.com/ruany/NoItemAbuse</url>
     
     <properties>
-        <reflectlib.version>1.3.2</reflectlib.version>
+        <reflectlib.version>1.3.3</reflectlib.version>
         <reflectlib.package>noitemabuse</reflectlib.package>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
