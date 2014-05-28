@@ -7,7 +7,7 @@
     <url>http://github.com/ruany/NoItemAbuse</url>
     
     <properties>
-        <reflectlib.version>1.3.3</reflectlib.version>
+        <reflectlib.version>1.3.4</reflectlib.version>
         <reflectlib.package>noitemabuse</reflectlib.package>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
