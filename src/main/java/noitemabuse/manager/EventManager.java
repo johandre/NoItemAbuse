@@ -7,11 +7,11 @@ import org.bukkit.Location;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.*;
 
 import reflectlib.bukkit.Plugin;
 import reflectlib.manager.Manager;
@@ -21,6 +21,13 @@ public class EventManager extends Manager implements Listener {
 
     public EventManager(Plugin parent) {
         super(parent);
+    }
+
+    public void checkInventory(Player player, Inventory inventory, Event event) {
+        ItemStack[] items = inventory.getContents();
+        for (ItemStack i : items) {
+            manager.check(player, i, event, INVENTORY_CLICK);
+        }
     }
 
     @Override
@@ -34,6 +41,13 @@ public class EventManager extends Manager implements Listener {
         Player p = e.getPlayer();
         ItemStack i = p.getItemInHand();
         manager.check(p, i, e, BLOCK_BREAK);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent e) {
+        Player p = e.getPlayer();
+        ItemStack i = p.getItemInHand();
+        manager.check(p, i, e, BLOCK_PLACE);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -60,11 +74,7 @@ public class EventManager extends Manager implements Listener {
         // Do the same as onInventoryOpen, if the inventory type is PLAYER (because clients don't tell the server when they open their inventory)
         if (e.getInventory().getType() != InventoryType.PLAYER) return;
         if (!(e.getWhoClicked() instanceof Player)) return;
-        Player p = (Player) e.getWhoClicked();
-        ItemStack[] items = e.getInventory().getContents();
-        for (ItemStack i : items) {
-            manager.check(p, i, e, INVENTORY_CLICK);
-        }
+        checkInventory((Player) e.getWhoClicked(), e.getInventory(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -80,7 +90,7 @@ public class EventManager extends Manager implements Listener {
                 } else if (event.getInventory().getHolder() instanceof DoubleChest) {
                     loc = ((DoubleChest) event.getInventory().getHolder()).getLocation();
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {} // I think a Bukkit bug made me do this
             String type = event.getInventory().getType().name().toLowerCase().replace("_", " ");
             manager.check(p, i, event, CONTAINER_OPEN, "$container:" + type, "$location:" + locationToString(loc));
         }
@@ -91,6 +101,12 @@ public class EventManager extends Manager implements Listener {
         ItemStack i = event.getItemDrop().getItemStack();
         Player p = event.getPlayer();
         manager.check(p, i, event, ITEM_DROP, "$location:" + locationToString(p.getLocation()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onItemSwitch(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        checkInventory(player, player.getInventory(), event);
     }
 
     private String locationToString(Location loc) {

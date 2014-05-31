@@ -10,10 +10,10 @@ import java.util.Date;
  * @author ruan
  */
 public class FileLogger {
-    private SimpleDateFormat format = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss] ");
-    private Date date = new Date();
+    private final SimpleDateFormat format = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss] ");
+    private final Date date = new Date();
     public final PrintWriter writer;
-    private Thread thread = new Thread(new Flusher());
+    private final Thread thread = new Thread(new Flusher());
     public static final Object lock = new Object();
     public boolean requireFlush = false;
 
@@ -59,9 +59,9 @@ public class FileLogger {
                         while (!requireFlush) {
                             lock.wait();
                         }
-                        writer.flush();
-                        requireFlush = false;
                     }
+                    writer.flush();
+                    requireFlush = false;
                 }
             } catch (InterruptedException ex) {} finally {
                 writer.close();

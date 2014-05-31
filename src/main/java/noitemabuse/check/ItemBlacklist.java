@@ -20,7 +20,7 @@ public class ItemBlacklist extends Check {
 
     @Override
     public boolean check(Player player, ItemStack item) {
-        return !player.hasPermission("*") && (player.hasPermission(getPermission() + "." + item.getType()) || checkItem(item));
+        return !player.hasPermission("*") && (!player.hasPermission(getPermission() + "." + item.getType()) || checkItem(item));
     }
 
     @Override

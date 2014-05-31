@@ -44,8 +44,8 @@ public class PotionEffects extends Check implements Listener {
 
     public Message checkEffect(PotionEffect effect) {
         final int level = effect.getAmplifier(), duration = effect.getDuration();
-        if (level > 2) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
-        if (duration > options.max_potion_effect_duration_ticks || duration < 0) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
+        if (level > options.max_potion_effect_level) return Message.REASON_POTION_INVALID_EFFECT_LEVEL;
+        if (duration > options.max_potion_effect_duration_ticks || duration < 0 && !options.allow_infinite_duration) return Message.REASON_POTION_INVALID_EFFECT_DURATION;
         return null;
     }
 
@@ -73,8 +73,11 @@ public class PotionEffects extends Check implements Listener {
     @Override
     public String getLogMessage(Player player, ItemStack item) {
         Message reason = checkPotionAndEffects(player, item);
-        return Message
-                .format(player, reason, "$type:" + getInvalidType(item), "$level:" + getPotionLevel(item), "$effectlevel:" + getInvalidEffectLevel(item), "$duration:" + getInvalidDuration(item));
+        String type = getInvalidType(item);
+        int level = getPotionLevel(item);
+        int effectlevel = getInvalidEffectLevel(item);
+        int duration = getInvalidDuration(item);
+        return Message.format(player, reason, "$type:" + type, "$level:" + level, "$effectlevel:" + effectlevel, "$duration:" + duration);
     }
 
     @Override
@@ -149,6 +152,8 @@ public class PotionEffects extends Check implements Listener {
 
     public class PotionEffectsOptions extends Options {
         public boolean remove_invalid_potions = true;
+        public boolean allow_infinite_duration = false;
+        public int max_potion_effect_level = 2;
         public int max_potion_effect_duration_ticks = 9600;
 
         public PotionEffectsOptions(Executor executor) {
