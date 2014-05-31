@@ -71,8 +71,13 @@ public class EventManager extends Manager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(InventoryClickEvent e) {
-        // Do the same as onInventoryOpen, if the inventory type is PLAYER (because clients don't tell the server when they open their inventory)
-        if (e.getInventory().getType() != InventoryType.PLAYER) return;
+        //if (e.getInventory().getType() != InventoryType.PLAYER) return;
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        checkInventory((Player) e.getWhoClicked(), e.getInventory(), e);
+    }
+    
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInventoryCreative(InventoryCreativeEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) return;
         checkInventory((Player) e.getWhoClicked(), e.getInventory(), e);
     }
