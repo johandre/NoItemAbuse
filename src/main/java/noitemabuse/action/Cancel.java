@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import reflectlib.bukkit.Plugin;
@@ -27,7 +28,7 @@ public class Cancel extends Action {
 
     @Override
     public void perform(Player player, ItemStack item, Event event, String message, List<Check> failedChecks) {
-        if (event instanceof InventoryEvent && !options.cancel_inventory_events) return;
+        if ((event instanceof InventoryEvent || event instanceof PlayerItemHeldEvent) && !options.cancel_inventory_events) return;
         if (event instanceof Cancellable) {
             ((Cancellable) event).setCancelled(true);
         }
