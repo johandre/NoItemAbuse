@@ -20,7 +20,11 @@ public class ItemBlacklist extends Check {
 
     @Override
     public boolean check(Player player, ItemStack item) {
-        return !player.hasPermission("*") && (!player.hasPermission(getPermission() + "." + item.getType()) || checkItem(item));
+        Material type = item.getType();
+        for (Material blacklist : blacklistMaterials) {
+            if (blacklist == type) return true;
+        }
+        return false;
     }
 
     @Override
@@ -38,12 +42,9 @@ public class ItemBlacklist extends Check {
         return options;
     }
 
-    private boolean checkItem(ItemStack item) {
-        Material type = item.getType();
-        for (Material blacklist : blacklistMaterials) {
-            if (blacklist == type) return true;
-        }
-        return false;
+    @Override
+    public boolean hasPermissions(Player player, ItemStack item) {
+        return super.hasPermissions(player, item) || player.hasPermission("*") || player.hasPermission(getPermission() + "." + item.getType());
     }
 
     public class BlacklistOptions extends Options {
