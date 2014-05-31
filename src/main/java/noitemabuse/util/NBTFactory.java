@@ -25,6 +25,7 @@ public class NBTFactory {
     static Field craftHandle;
     static Field stackTag;
     private static NBTFactory instance;
+
     /**
      * Construct an instance of the NBT factory by deducing the class of NBTBase.
      */
@@ -123,13 +124,14 @@ public class NBTFactory {
      * @return The CraftItemStack version.
      */
     public static ItemStack getCraftItemStack(ItemStack stack) {
-        if (stack == null || get().craftItemStack.isAssignableFrom(stack.getClass())) return stack;
+        get();
+        if (stack == null || NBTFactory.craftItemStack.isAssignableFrom(stack.getClass())) return stack;
         try {
-            Constructor<?> caller = instance.craftItemStack.getDeclaredConstructor(ItemStack.class);
+            Constructor<?> caller = NBTFactory.craftItemStack.getDeclaredConstructor(ItemStack.class);
             caller.setAccessible(true);
             return (ItemStack) caller.newInstance(stack);
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to convert " + stack + " + to a CraftItemStack.");
+            throw new IllegalStateException("Unable to convert " + stack + " + to a CraftItemStack.", e);
         }
     }
 
@@ -154,7 +156,8 @@ public class NBTFactory {
      */
     private static void checkItemStack(ItemStack item) {
         if (item == null) throw new IllegalArgumentException("Stack cannot be null.");
-        if (!get().craftItemStack.isAssignableFrom(item.getClass())) throw new IllegalArgumentException("item must be a CraftItemStack.");
+        get();
+        if (!NBTFactory.craftItemStack.isAssignableFrom(item.getClass())) throw new IllegalArgumentException("item must be a CraftItemStack.");
         if (item.getType() == Material.AIR) throw new IllegalArgumentException("Item cannot be air");
     }
 

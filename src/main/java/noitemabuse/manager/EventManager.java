@@ -71,13 +71,7 @@ public class EventManager extends Manager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(InventoryClickEvent e) {
-        //if (e.getInventory().getType() != InventoryType.PLAYER) return;
-        if (!(e.getWhoClicked() instanceof Player)) return;
-        checkInventory((Player) e.getWhoClicked(), e.getInventory(), e);
-    }
-    
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onInventoryCreative(InventoryCreativeEvent e) {
+        // if (e.getInventory().getType() != InventoryType.PLAYER) return;
         if (!(e.getWhoClicked() instanceof Player)) return;
         checkInventory((Player) e.getWhoClicked(), e.getInventory(), e);
     }
