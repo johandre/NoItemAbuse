@@ -6,5 +6,5 @@ author: Ruan
 website: https://github.com/ruany/NoItemAbuse
 commands:
   noitemabuse:
-    aliases: [nia, ni, n]
+    aliases: [nia]
     usage: /<command> toggle

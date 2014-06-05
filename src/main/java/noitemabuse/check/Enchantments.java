@@ -50,7 +50,9 @@ public class Enchantments extends Check {
     public boolean hasEnchantPermissions(Player player, ItemStack item, Entry<Enchantment, Integer> ent) {
         String itemName = item.getType().toString();
         String name = ent.getKey().getName();
-        return player.hasPermission(getPermission() + "." + itemName + "." + name) || player.hasPermission(getPermission() + "." + name);
+        int level = ent.getValue();
+        return hasPermissionList(player, getPermission(), itemName, name, level) || hasPermissionList(player, getPermission(), name, itemName, level);
+        //return player.hasPermission(getPermission() + "." + itemName + "." + name + "." + level) || player.hasPermission(getPermission() + "." + itemName + "." + name) || player.hasPermission(getPermission() + "." + name);
     }
 
     public class EnchantmentsOptions extends Options {
